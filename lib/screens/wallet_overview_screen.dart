@@ -36,13 +36,15 @@ class WalletOverviewScreen extends StatelessWidget {
             children: <Widget>[
               Container(
                 margin: const EdgeInsets.all(20),
-                child: Column(
-                 children: [
-                   const NumberStatCard(text: "-156.50€", textColor: Colors.redAccent),
-                   const SizedBox(height: 60),
-                   CategoryPieChart(chartData: chartData)
-                 ],
-                ),
+                child: SingleChildScrollView(
+                  child: Column(
+                   children: [
+                     const NumberStatCard(text: "-156.50€", textColor: Colors.redAccent),
+                     const SizedBox(height: 60),
+                     CategoryPieChart(chartData: chartData)
+                   ],
+                  ),
+                )
               ),
               const Center(
                 child: Text("It's rainy hereee"),

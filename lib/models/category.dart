@@ -6,7 +6,7 @@ class CashFlowCategory {
   final String name;
   final Color color;
   final IconData iconData;
-  final bool isIncome;
+  final bool isIncomeCategory;
 
   static String tableName = 'cash_flow_category';
 
@@ -15,7 +15,7 @@ class CashFlowCategory {
     required this.name,
     required this.color,
     required this.iconData,
-    required this.isIncome,
+    required this.isIncomeCategory,
   });
 
   Map<String, dynamic> toMap() {
@@ -24,7 +24,7 @@ class CashFlowCategory {
       'name': name,
       'color': color.value,
       'iconData': iconDataToJSONString(iconData),
-      'isIncome': isIncome
+      'isIncomeCategory': isIncomeCategory
     };
   }
 
@@ -34,7 +34,7 @@ class CashFlowCategory {
       name: map['name'],
       color: Color(map['color']),
       iconData: iconDatafromJSONString(map['iconData']),
-      isIncome: map['isIncome'] == 1
+      isIncomeCategory: map['isIncomeCategory'] == 1
     );
   }
 
@@ -43,9 +43,9 @@ class CashFlowCategory {
       create table $tableName (
         id integer primary key autoincrement,
         name text not null,
-        color integer
-        iconData text not null
-        isIncome integer 
+        color integer,
+        iconData text not null,
+        isIncomeCategory integer 
       ) 
     ''';
   }
