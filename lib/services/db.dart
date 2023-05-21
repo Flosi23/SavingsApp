@@ -11,6 +11,7 @@ class DatabaseService {
 
     return openDatabase(
       join(path, 'savings_app.db'),
+      version: 3,
       onCreate: (database, version) async {
         await database.execute(CashFlowCategory.createTableStatement());
         await database.execute(Wallet.createTableStatement());

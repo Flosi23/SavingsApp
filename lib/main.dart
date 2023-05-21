@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:savings_app/screens/settings_screen.dart';
 import 'package:savings_app/screens/timeline_screen.dart';
 import 'package:savings_app/screens/wallet_overview_screen.dart';
+import 'package:savings_app/screens/wallets_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -52,7 +53,7 @@ class _LayoutState extends State<Layout> {
   int _selectedIndex = 0;
 
   final List<Page> _pages = [
-    Page("Wallets", Icons.wallet, const WalletOverviewScreen()),
+    Page("Wallets", Icons.wallet, const WalletsScreen()),
     Page("Timeline", Icons.timeline, const TimelineScreen()),
     Page("Settings", Icons.settings, const SettingsScreen())
   ];

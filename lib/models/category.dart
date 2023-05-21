@@ -20,7 +20,6 @@ class CashFlowCategory {
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
       'name': name,
       'color': color.value,
       'iconData': iconDataToJSONString(iconData),
