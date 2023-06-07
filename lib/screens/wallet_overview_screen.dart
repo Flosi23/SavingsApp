@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:savings_app/models/wallet.dart';
 import 'package:savings_app/widgets/atoms/NumberStatCard.dart';
-import 'package:savings_app/widgets/atoms/ScreenContainer.dart';
 import 'package:savings_app/widgets/molecules/TimeSpanSelector.dart';
-import 'package:savings_app/widgets/organisms/pie_chart.dart';
 
 enum WalletOverviewScreenAction { edit, delete }
 
@@ -21,16 +19,25 @@ class WalletOverviewScreen extends StatefulWidget {
   final Wallet wallet;
 
   @override
-  State<StatefulWidget> createState() => WalletOverviewScreenState();
+  State<StatefulWidget> createState() => _WalletOverviewScreenState();
 }
 
-class WalletOverviewScreenState extends State<WalletOverviewScreen> {
+class _WalletOverviewScreenState extends State<WalletOverviewScreen>
+    with TickerProviderStateMixin {
   late Wallet wallet;
+  late final TabController _tabController;
 
   @override
   void initState() {
     super.initState();
     wallet = widget.wallet;
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   @override
@@ -105,15 +112,6 @@ class WalletOverviewScreenState extends State<WalletOverviewScreen> {
       }
     }
 
-    List<SectionData> chartData = [
-      SectionData(value: 40, color: Colors.blue, iconData: Icons.add),
-      SectionData(value: 25, color: Colors.green, iconData: Icons.remove),
-      SectionData(value: 10, color: Colors.teal, iconData: Icons.wallet),
-      SectionData(value: 15, color: Colors.yellow, iconData: Icons.timeline),
-      SectionData(
-          value: 10, color: Colors.pinkAccent, iconData: Icons.settings),
-    ];
-
     return DefaultTabController(
         length: 2,
         child: Scaffold(
@@ -130,9 +128,8 @@ class WalletOverviewScreenState extends State<WalletOverviewScreen> {
                     icon: const Icon(Icons.delete_outline))
               ],
             ),
-            body: ScreenContainer(
-                child: SizedBox.expand(
-                    child: Column(
+            body: SizedBox.expand(
+                child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const NumberStatCard(
@@ -140,8 +137,19 @@ class WalletOverviewScreenState extends State<WalletOverviewScreen> {
                   description: "Wallet Balance",
                   numberColor: null,
                 ),
-                TimespanSelector(onChanged: (v) => {}),
+                const SizedBox(height: 20),
+                TimeSpanSelector(onChanged: (v) => {}),
+                TabBar.secondary(controller: _tabController, tabs: const [
+                  Tab(text: "Summary"),
+                  Tab(text: "Transactions")
+                ]),
+                Expanded(
+                    child:
+                        TabBarView(controller: _tabController, children: const [
+                  const Text("nice"),
+                  const Text("lol"),
+                ]))
               ],
-            )))));
+            ))));
   }
 }

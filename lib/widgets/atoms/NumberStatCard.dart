@@ -19,7 +19,7 @@ class NumberStatCard extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(20),
           child: Column(children: [
-            Text(number.toString(),
+            Text('${number.toString()}€',
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 30,

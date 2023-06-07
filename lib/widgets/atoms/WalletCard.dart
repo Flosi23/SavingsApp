@@ -21,18 +21,18 @@ class WalletCard extends StatelessWidget {
             onTap: () => {onTap(wallet)},
             borderRadius: borderRadius,
             child: Container(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(25),
               child: Row(
                 children: [
-                  Row(children: [
-                    const Icon(Icons.wallet),
+                  Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                    const Icon(Icons.wallet, size: 30),
                     const SizedBox(width: 10),
-                    Text(wallet.name,
-                        style: Theme.of(context).textTheme.bodyLarge),
+                    Text(wallet.name, style: const TextStyle(fontSize: 20)),
                     const SizedBox(width: 10),
-                    Text(wallet.balance.toString(),
+                    Text('${wallet.balance.toString()}€',
                         style: const TextStyle(
                             fontWeight: FontWeight.bold,
+                            fontSize: 18,
                             fontFamily: 'Numbers')),
                   ]),
                   const Spacer(),

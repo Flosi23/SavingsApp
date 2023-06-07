@@ -47,17 +47,13 @@ class _SelectItemState<T> extends State<SelectItem<T>> {
     double borderRadius = 25;
 
     return IntrinsicWidth(
-        child: DropdownButtonFormField(
-            decoration: InputDecoration(
-                hoverColor: Colors.transparent,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(25),
-                )),
+        child: DropdownButton(
             items: widget.items
                 .map((SelectableItem<T> item) =>
                     DropdownMenuItem(value: item, child: Text(item.text)))
                 .toList(),
             value: selectedItem,
+            underline: Container(),
             borderRadius: BorderRadius.circular(25),
             onChanged: onChanged,
             isDense: true,
