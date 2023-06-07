@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 
 class NumberStatCard extends StatelessWidget {
-  const NumberStatCard({super.key, required this.text, required this.textColor});
+  const NumberStatCard(
+      {super.key,
+      required this.number,
+      required this.description,
+      required this.numberColor});
 
-  final String text;
-  final Color textColor;
+  final double number;
+  final String description;
+  final Color? numberColor;
 
   @override
   Widget build(BuildContext context) {
@@ -13,16 +18,15 @@ class NumberStatCard extends StatelessWidget {
         shadowColor: Colors.transparent,
         child: Container(
           padding: const EdgeInsets.all(20),
-          child: Text(
-              text,
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 40,
-                  color: textColor,
-                  fontFamily: 'Numbers'
-              )
-          ),
-        )
-    );
+          child: Column(children: [
+            Text(number.toString(),
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 30,
+                    color: numberColor,
+                    fontFamily: 'Numbers')),
+            Text(description)
+          ]),
+        ));
   }
 }

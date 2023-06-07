@@ -1,12 +1,12 @@
 class Wallet {
   final int id;
-  final String name;
-  final double balance;
+  String name;
+  double balance;
   final double initialBalance;
 
   static String tableName = 'wallet';
 
-  const Wallet({
+  Wallet({
     required this.id,
     required this.name,
     required this.balance,
@@ -14,21 +14,15 @@ class Wallet {
   });
 
   Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'name': name,
-      'balance': balance,
-      'initialBalance': initialBalance
-    };
+    return {'name': name, 'balance': balance, 'initialBalance': initialBalance};
   }
 
-  static Wallet fromMap(Map<String, dynamic> map){
+  static Wallet fromMap(Map<String, dynamic> map) {
     return Wallet(
-      id: map['id'],
-      name: map['name'],
-      balance: map['balance'],
-      initialBalance: map['initialBalance']
-    );
+        id: map['id'],
+        name: map['name'],
+        balance: map['balance'],
+        initialBalance: map['initialBalance']);
   }
 
   static String createTableStatement() {

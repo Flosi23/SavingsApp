@@ -2,7 +2,6 @@ import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:savings_app/screens/settings_screen.dart';
 import 'package:savings_app/screens/timeline_screen.dart';
-import 'package:savings_app/screens/wallet_overview_screen.dart';
 import 'package:savings_app/screens/wallets_screen.dart';
 
 void main() {
@@ -50,7 +49,7 @@ class Layout extends StatefulWidget {
 }
 
 class _LayoutState extends State<Layout> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 1;
 
   final List<Page> _pages = [
     Page("Wallets", Icons.wallet, const WalletsScreen()),
@@ -69,12 +68,12 @@ class _LayoutState extends State<Layout> {
     return Scaffold(
       body: _pages.elementAt(_selectedIndex).screen,
       bottomNavigationBar: NavigationBar(
-        selectedIndex: _selectedIndex,
-        onDestinationSelected: _onDestinationSelected,
-        destinations: _pages.map((page) =>
-            NavigationDestination(label: page.name, icon: Icon(page.iconData))
-        ).toList()
-      ),
+          selectedIndex: _selectedIndex,
+          onDestinationSelected: _onDestinationSelected,
+          destinations: _pages
+              .map((page) => NavigationDestination(
+                  label: page.name, icon: Icon(page.iconData)))
+              .toList()),
     );
   }
 }

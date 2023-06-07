@@ -18,8 +18,9 @@ class DatabaseService {
         await database.execute(CashTransaction.createTableStatement());
 
         var defaultCategories = getDefaultCashFlowCategories();
-        for(final cashFlowCategory in defaultCategories) {
-          await database.insert(CashFlowCategory.tableName, cashFlowCategory.toMap());
+        for (final cashFlowCategory in defaultCategories) {
+          await database.insert(
+              CashFlowCategory.tableName, cashFlowCategory.toMap());
         }
       },
     );
@@ -27,13 +28,17 @@ class DatabaseService {
 
   Future<int> insertCashFlowCategory(CashFlowCategory cashFlowCategory) async {
     final Database db = await initializeDB();
-    return await db.insert(CashFlowCategory.tableName, cashFlowCategory.toMap());
+    return await db.insert(
+        CashFlowCategory.tableName, cashFlowCategory.toMap());
   }
 
   Future<List<CashFlowCategory>> retrieveCashFlowCategories() async {
     final Database db = await initializeDB();
-    final List<Map<String, Object?>> queryResult = await db.query(CashFlowCategory.tableName);
-    return queryResult.map((result) => CashFlowCategory.fromMap(result)).toList();
+    final List<Map<String, Object?>> queryResult =
+        await db.query(CashFlowCategory.tableName);
+    return queryResult
+        .map((result) => CashFlowCategory.fromMap(result))
+        .toList();
   }
 
   Future<int> insertWallet(Wallet wallet) async {
@@ -41,9 +46,20 @@ class DatabaseService {
     return await db.insert(Wallet.tableName, wallet.toMap());
   }
 
+  Future<int> deleteWallet(Wallet wallet) async {
+    final Database db = await initializeDB();
+    return await db.delete(Wallet.tableName, where: "ID = ${wallet.id}");
+  }
+
+  Future<int> updateWallet(Wallet wallet) async {
+    final Database db = await initializeDB();
+    return await db.update(Wallet.tableName, wallet.toMap());
+  }
+
   Future<List<Wallet>> retrieveWallets() async {
     final Database db = await initializeDB();
-    final List<Map<String, Object?>> queryResult = await db.query(Wallet.tableName);
+    final List<Map<String, Object?>> queryResult =
+        await db.query(Wallet.tableName);
     return queryResult.map((result) => Wallet.fromMap(result)).toList();
   }
 
@@ -54,7 +70,10 @@ class DatabaseService {
 
   Future<List<CashTransaction>> retrieveCashTransactions() async {
     final Database db = await initializeDB();
-    final List<Map<String, Object?>> queryResult = await db.query(CashTransaction.tableName);
-    return queryResult.map((result) => CashTransaction.fromMap(result)).toList();
+    final List<Map<String, Object?>> queryResult =
+        await db.query(CashTransaction.tableName);
+    return queryResult
+        .map((result) => CashTransaction.fromMap(result))
+        .toList();
   }
 }
