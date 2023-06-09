@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:savings_app/models/category.dart';
 import 'package:savings_app/models/transaction.dart';
 import 'package:savings_app/models/wallet.dart';
+import 'package:savings_app/screens/transaction_create_screen.dart';
 import 'package:savings_app/services/db.dart';
 import 'package:savings_app/widgets/molecules/TimeSpanSelector.dart';
 
@@ -14,19 +15,31 @@ class TimelineScreen extends StatefulWidget {
 
 class _TimelineScreenState extends State<TimelineScreen> {
   final DatabaseService _databaseService = DatabaseService();
-  late Future<List<Wallet>> _wallets;
-  late Future<List<CashTransaction>> _transactions;
-  late Future<List<CashFlowCategory>> _categories;
+  List<Wallet> _wallets = [];
+  List<CashTransaction> _transactions = [];
+  List<CashFlowCategory> _categories = [];
 
   @override
   void initState() {
     super.initState();
-    _wallets = _databaseService.retrieveWallets();
-    _transactions = _databaseService.retrieveCashTransactions();
-    _categories = _databaseService.retrieveCashFlowCategories();
+    retrieveFromDB();
   }
 
-  void showAddTransactionScreen() async {}
+  void retrieveFromDB() async {
+    _wallets = await _databaseService.retrieveWallets();
+    _transactions = await _databaseService.retrieveCashTransactions();
+    _categories = await _databaseService.retrieveCashFlowCategories();
+  }
+
+  void showAddTransactionScreen() async {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => TransactionCreateScreen(
+                  wallets: _wallets,
+                  categories: _categories,
+                )));
+  }
 
   @override
   Widget build(BuildContext context) {
