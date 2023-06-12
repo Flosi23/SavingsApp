@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:savings_app/models/category.dart';
 import 'package:savings_app/models/wallet.dart';
+import 'package:savings_app/widgets/atoms/CashFlowCategoryIcon.dart';
 import 'package:savings_app/widgets/atoms/InputRow.dart';
 import 'package:savings_app/widgets/atoms/SelectItem.dart';
+import 'package:savings_app/widgets/molecules/SelectCategory.dart';
 
 class TransactionCreateScreen extends StatefulWidget {
   const TransactionCreateScreen(
@@ -25,6 +27,9 @@ class _TransactionCreateScreenState extends State<TransactionCreateScreen> {
   late List<SelectableItem<Wallet>> _walletItems;
   Wallet? _selectedWallet;
 
+  late TextEditingController _categoryController;
+  CashFlowCategory? _selectedCategory;
+
   @override
   void initState() {
     super.initState();
@@ -34,6 +39,7 @@ class _TransactionCreateScreenState extends State<TransactionCreateScreen> {
     _walletItems = widget.wallets
         .map((wallet) => SelectableItem(text: wallet.name, value: wallet))
         .toList();
+    _categoryController = TextEditingController();
     updateSelectedDate(_selectedDate);
   }
 
@@ -41,6 +47,13 @@ class _TransactionCreateScreenState extends State<TransactionCreateScreen> {
   void dispose() {
     _dateController.dispose();
     super.dispose();
+  }
+
+  void updateSelectedCategory(CashFlowCategory? newCategory) {
+    setState(() {
+      _selectedCategory = newCategory;
+      _categoryController.text = newCategory == null ? "" : newCategory.name;
+    });
   }
 
   void updateSelectedDate(DateTime newDate) {
@@ -79,7 +92,18 @@ class _TransactionCreateScreenState extends State<TransactionCreateScreen> {
       updateSelectedDate(newDate);
     }
 
-    void openCategorySelection() async {}
+    void openCategorySelection() async {
+      SelectCategoryResult? result =
+          await showModalBottomSheet<SelectCategoryResult>(
+              context: context,
+              builder: (BuildContext context) {
+                return SelectCategory(categories: widget.categories);
+              });
+
+      if (result == null) return;
+
+      updateSelectedCategory(result.category);
+    }
 
     return Scaffold(
         appBar: AppBar(
@@ -106,13 +130,22 @@ class _TransactionCreateScreenState extends State<TransactionCreateScreen> {
               )),
               const Divider(),
               InputRow(
+                  icon: _selectedCategory == null
+                      ? Container()
+                      : SizedBox(
+                          height: 40,
+                          width: 40,
+                          child: CashFlowCategoryIcon(
+                              category: _selectedCategory!)),
                   child: TextField(
-                style: Theme.of(context).textTheme.bodyLarge,
-                readOnly: true,
-                onTap: openCategorySelection,
-                decoration: const InputDecoration(
-                    hintText: "Select a category", border: InputBorder.none),
-              )),
+                    controller: _categoryController,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                    readOnly: true,
+                    onTap: openCategorySelection,
+                    decoration: const InputDecoration(
+                        hintText: "Select a category",
+                        border: InputBorder.none),
+                  )),
               const Divider(),
               InputRow(
                   icon: const Icon(Icons.wallet),
