@@ -31,9 +31,9 @@ class WalletCard extends StatelessWidget {
                     const SizedBox(width: 10),
                     Text('${wallet.balance.toString()}€',
                         style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                            fontFamily: 'Numbers')),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        )),
                   ]),
                   const Spacer(),
                   const Icon(Icons.chevron_right)

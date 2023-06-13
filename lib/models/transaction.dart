@@ -19,7 +19,6 @@ class CashTransaction {
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
       'walletId': walletId,
       'categoryId': categoryId,
       'amount': amount,
@@ -30,13 +29,12 @@ class CashTransaction {
 
   static CashTransaction fromMap(Map<String, dynamic> map) {
     return CashTransaction(
-      id: map['id'],
-      walletId: map['walletId'],
-      categoryId: map['categoryId'],
-      amount: map['amount'],
-      description: map['description'],
-      date: DateTime.fromMillisecondsSinceEpoch(map['date'])
-    );
+        id: map['id'],
+        walletId: map['walletId'],
+        categoryId: map['categoryId'],
+        amount: map['amount'],
+        description: map['description'],
+        date: DateTime.fromMillisecondsSinceEpoch(map['date']));
   }
 
   static String createTableStatement() {

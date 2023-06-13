@@ -57,9 +57,24 @@ class _TransactionCreateScreenState extends State<TransactionCreateScreen> {
       _selectedCategory = newCategory;
       _categoryController.text = newCategory == null ? "" : newCategory.name;
     });
+  }
 
   void close() {
     CashTransaction? transaction;
+    if (_amountController.text.isNotEmpty &&
+        _selectedCategory != null &&
+        _selectedWallet != null) {
+      double amount = double.parse(_amountController.text);
+      transaction = CashTransaction(
+          id: 0,
+          walletId: _selectedWallet!.id,
+          categoryId: _selectedCategory!.id,
+          amount: amount,
+          description: _descriptionController.text,
+          date: _selectedDate);
+    }
+
+    Navigator.pop(context, transaction);
   }
 
   void updateSelectedDate(DateTime newDate) {
@@ -81,7 +96,7 @@ class _TransactionCreateScreenState extends State<TransactionCreateScreen> {
   @override
   Widget build(BuildContext context) {
     void cancel() {
-      Navigator.pop(context);
+      Navigator.pop(context, null);
     }
 
     void openDatePicker() async {
@@ -120,8 +135,8 @@ class _TransactionCreateScreenState extends State<TransactionCreateScreen> {
           actions: [
             Container(
                 margin: const EdgeInsets.only(right: 15),
-                child: FilledButton(
-                    onPressed: () => {}, child: const Text("Save"))),
+                child:
+                    FilledButton(onPressed: close, child: const Text("Save"))),
           ],
         ),
         body: SizedBox.expand(

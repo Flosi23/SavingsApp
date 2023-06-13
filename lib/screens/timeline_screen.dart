@@ -4,6 +4,7 @@ import 'package:savings_app/models/transaction.dart';
 import 'package:savings_app/models/wallet.dart';
 import 'package:savings_app/screens/transaction_create_screen.dart';
 import 'package:savings_app/services/db.dart';
+import 'package:savings_app/widgets/atoms/TransactionView.dart';
 import 'package:savings_app/widgets/molecules/TimeSpanSelector.dart';
 
 class TimelineScreen extends StatefulWidget {
@@ -26,19 +27,38 @@ class _TimelineScreenState extends State<TimelineScreen> {
   }
 
   void retrieveFromDB() async {
-    _wallets = await _databaseService.retrieveWallets();
-    _transactions = await _databaseService.retrieveCashTransactions();
-    _categories = await _databaseService.retrieveCashFlowCategories();
+    List<Wallet> wallets = await _databaseService.retrieveWallets();
+    List<CashFlowCategory> categories =
+        await _databaseService.retrieveCashFlowCategories();
+
+    setState(() {
+      _wallets = wallets;
+      _categories = categories;
+    });
+    retrieveTransactions();
+  }
+
+  void retrieveTransactions() async {
+    List<CashTransaction> transactions =
+        await _databaseService.retrieveCashTransactions();
+    setState(() {
+      _transactions = transactions;
+    });
   }
 
   void showAddTransactionScreen() async {
-    Navigator.push(
+    CashTransaction? transaction = await Navigator.push(
         context,
         MaterialPageRoute(
             builder: (context) => TransactionCreateScreen(
                   wallets: _wallets,
                   categories: _categories,
                 )));
+
+    if (transaction != null) {
+      await _databaseService.insertCashTransaction(transaction);
+      retrieveTransactions();
+    }
   }
 
   @override
@@ -54,7 +74,19 @@ class _TimelineScreenState extends State<TimelineScreen> {
             TimeSpanSelector(onChanged: (v) => {}),
             Expanded(
                 child: ListView(
-              children: [],
+              children: _transactions.map((transaction) {
+                Wallet wallet = _wallets
+                    .where((wallet) => wallet.id == transaction.walletId)
+                    .first;
+                CashFlowCategory category = _categories
+                    .where((category) => category.id == transaction.categoryId)
+                    .first;
+
+                return TransactionView(
+                    transaction: transaction,
+                    wallet: wallet,
+                    category: category);
+              }).toList(),
             ))
           ],
         )),

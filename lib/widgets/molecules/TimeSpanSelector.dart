@@ -111,9 +111,9 @@ class _TimespanSelectorState extends State<TimeSpanSelector> {
     });
   }
 
-  void onTimeDurationChanged(TimeDuration timeDuration) {
+  void onTimeDurationChanged(Set<TimeDuration> timeDuration) {
     setState(() {
-      duration = timeDuration;
+      duration = timeDuration.first;
       setTimeSpan();
     });
   }
@@ -122,10 +122,15 @@ class _TimespanSelectorState extends State<TimeSpanSelector> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        SelectItem<TimeDuration>(
-            items: widget.items,
-            initialSelection: widget.items[1],
-            onChanged: onTimeDurationChanged),
+        SegmentedButton(
+          segments: const [
+            ButtonSegment(value: TimeDuration.week, label: Text("Week")),
+            ButtonSegment(value: TimeDuration.month, label: Text("Month")),
+            ButtonSegment(value: TimeDuration.year, label: Text("Year")),
+          ],
+          selected: {duration},
+          onSelectionChanged: onTimeDurationChanged,
+        ),
         const SizedBox(
           height: 10,
         ),
@@ -139,33 +144,34 @@ class _TimespanSelectorState extends State<TimeSpanSelector> {
                 shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.zero),
                 child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.chevron_left),
-                        Expanded(
-                            child: PageView.builder(
-                                reverse: true,
-                                scrollDirection: Axis.horizontal,
-                                pageSnapping: true,
-                                onPageChanged: onPageChanged,
-                                itemBuilder: (content, pagePosition) {
-                                  return Center(
-                                      child: Text(
-                                          style: const TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                          timeSpan.getString(duration)));
-                                })),
-                        Icon(
-                          Icons.chevron_right,
-                          color:
-                              currentPosition == 0 ? Colors.transparent : null,
-                        )
-                      ],
-                    ))))
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.chevron_left),
+                      Expanded(
+                          child: PageView.builder(
+                              reverse: true,
+                              scrollDirection: Axis.horizontal,
+                              pageSnapping: true,
+                              onPageChanged: onPageChanged,
+                              itemBuilder: (content, pagePosition) {
+                                return Center(
+                                    child: Text(
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                        timeSpan.getString(duration)));
+                              })),
+                      Icon(
+                        Icons.chevron_right,
+                        color: currentPosition == 0 ? Colors.transparent : null,
+                      )
+                    ],
+                  ),
+                ))),
+        const Divider()
       ],
     );
   }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:savings_app/models/wallet.dart';
-import 'package:savings_app/widgets/atoms/ScreenContainer.dart';
+import 'package:savings_app/widgets/atoms/InputRow.dart';
 
 class WalletCreateScreen extends StatefulWidget {
   const WalletCreateScreen({super.key});
@@ -42,41 +42,47 @@ class _WalletCreateScreenState extends State<WalletCreateScreen> {
     Navigator.pop(context, wallet);
   }
 
+  void cancel() {
+    Navigator.pop(context, null);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          centerTitle: true,
-          title: const Text("Create a new wallet"),
+          leading: IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: cancel,
+          ),
+          actions: [
+            Container(
+                margin: const EdgeInsets.only(right: 15),
+                child: FilledButton(
+                    onPressed: createAndInsertWallet,
+                    child: const Text("Save"))),
+          ],
         ),
-        body: ScreenContainer(
+        body: SizedBox.expand(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(children: [
-                TextField(
-                  controller: _nameController,
-                  keyboardType: TextInputType.text,
-                  decoration: const InputDecoration(
-                      hintText: "Name", prefixIcon: Icon(Icons.wallet)),
-                ),
-                const SizedBox(height: 20),
-                TextField(
-                  controller: _initialBalanceController,
-                  keyboardType: TextInputType.number,
-                  style: const TextStyle(fontFamily: "Numbers"),
-                  decoration: const InputDecoration(
-                      hintText: "Initial Balance",
-                      prefixIcon: Icon(Icons.payments),
-                      suffixIcon: Icon(Icons.euro)),
-                )
-              ]),
-              FilledButton(
-                  onPressed: createAndInsertWallet,
-                  style: ButtonStyle(
-                      minimumSize:
-                          MaterialStateProperty.all(const Size.fromHeight(50))),
-                  child: const Text("Create Wallet"))
+              InputRow(
+                  child: TextField(
+                style: Theme.of(context).textTheme.headlineSmall,
+                controller: _nameController,
+                decoration: const InputDecoration(
+                    hintText: "Name", border: InputBorder.none),
+              )),
+              const Divider(),
+              InputRow(
+                  icon: const Icon(Icons.payment),
+                  child: TextField(
+                    controller: _initialBalanceController,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                        hintText: "Initial Balance", border: InputBorder.none),
+                  )),
+              const Divider()
             ],
           ),
         ));
