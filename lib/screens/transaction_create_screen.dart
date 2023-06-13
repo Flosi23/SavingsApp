@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:savings_app/models/category.dart';
+import 'package:savings_app/models/transaction.dart';
 import 'package:savings_app/models/wallet.dart';
 import 'package:savings_app/widgets/atoms/CashFlowCategoryIcon.dart';
 import 'package:savings_app/widgets/atoms/InputRow.dart';
@@ -19,11 +20,10 @@ class TransactionCreateScreen extends StatefulWidget {
 }
 
 class _TransactionCreateScreenState extends State<TransactionCreateScreen> {
+  late TextEditingController _amountController;
   late TextEditingController _descriptionController;
-
   late TextEditingController _dateController;
   late DateTime _selectedDate;
-
   late List<SelectableItem<Wallet>> _walletItems;
   Wallet? _selectedWallet;
 
@@ -34,6 +34,7 @@ class _TransactionCreateScreenState extends State<TransactionCreateScreen> {
   void initState() {
     super.initState();
     _descriptionController = TextEditingController();
+    _amountController = TextEditingController();
     _dateController = TextEditingController();
     _selectedDate = DateTime.now();
     _walletItems = widget.wallets
@@ -45,6 +46,8 @@ class _TransactionCreateScreenState extends State<TransactionCreateScreen> {
 
   @override
   void dispose() {
+    _amountController.dispose();
+    _descriptionController.dispose();
     _dateController.dispose();
     super.dispose();
   }
@@ -54,6 +57,9 @@ class _TransactionCreateScreenState extends State<TransactionCreateScreen> {
       _selectedCategory = newCategory;
       _categoryController.text = newCategory == null ? "" : newCategory.name;
     });
+
+  void close() {
+    CashTransaction? transaction;
   }
 
   void updateSelectedDate(DateTime newDate) {
@@ -125,6 +131,7 @@ class _TransactionCreateScreenState extends State<TransactionCreateScreen> {
                   child: TextField(
                 style: Theme.of(context).textTheme.headlineSmall,
                 keyboardType: TextInputType.number,
+                controller: _amountController,
                 decoration: const InputDecoration(
                     hintText: "Cost", border: InputBorder.none),
               )),
