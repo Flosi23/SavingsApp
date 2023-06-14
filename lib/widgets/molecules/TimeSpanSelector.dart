@@ -68,9 +68,11 @@ class TimeSpan {
 }
 
 class TimeSpanSelector extends StatefulWidget {
-  TimeSpanSelector({super.key, required this.onChanged});
+  TimeSpanSelector(
+      {super.key, required this.onChanged, required this.defaultTimeSpan});
 
   final void Function(TimeSpan value) onChanged;
+  final TimeSpan defaultTimeSpan;
   final List<SelectableItem<TimeDuration>> items = [
     const SelectableItem<TimeDuration>(text: "Weeks", value: TimeDuration.week),
     const SelectableItem<TimeDuration>(
@@ -90,11 +92,8 @@ class _TimespanSelectorState extends State<TimeSpanSelector> {
 
   @override
   void initState() {
-    DateTime now = DateTime.now();
-    timeSpan = TimeSpan(
-        start: DateTime(now.year, now.month, 1),
-        end: DateTime(now.year, now.month + 1, 1));
     super.initState();
+    timeSpan = widget.defaultTimeSpan;
   }
 
   void setTimeSpan() {
@@ -171,7 +170,6 @@ class _TimespanSelectorState extends State<TimeSpanSelector> {
                     ],
                   ),
                 ))),
-        const Divider()
       ],
     );
   }

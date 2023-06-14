@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class TransactionDivider extends StatelessWidget {
-  const TransactionDivider({super.key, required this.day, required this.sum});
+  const TransactionDivider(
+      {super.key, required this.dateString, required this.sum});
 
-  final DateTime day;
+  final String dateString;
   final double sum;
 
   @override
   Widget build(BuildContext context) {
-    DateFormat format = DateFormat("MMMM dd");
-    String dayString = format.format(day);
-
     return Card(
         elevation: 1,
         shadowColor: Colors.transparent,
@@ -20,6 +17,6 @@ class TransactionDivider extends StatelessWidget {
             padding: const EdgeInsets.all(10),
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [Text(dayString), Text('$sum€')])));
+                children: [Text(dateString), Text('$sum€')])));
   }
 }

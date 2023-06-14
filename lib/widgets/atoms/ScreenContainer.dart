@@ -4,7 +4,7 @@ class ScreenContainer extends Container {
   ScreenContainer(
       {super.key,
       super.child,
-      super.margin = const EdgeInsets.all(10),
+      super.margin = const EdgeInsets.all(15),
       super.alignment,
       super.clipBehavior,
       super.color,

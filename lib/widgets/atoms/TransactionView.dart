@@ -50,17 +50,18 @@ class TransactionView extends StatelessWidget {
                                 style: Theme.of(context).textTheme.bodyMedium)
                           ],
                         ),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            const Icon(Icons.notes, size: 20),
-                            const SizedBox(width: 5),
-                            Text(
-                              transaction.description,
-                              style: Theme.of(context).textTheme.bodyMedium,
-                            )
-                          ],
-                        )
+                        if (transaction.description.isNotEmpty)
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.notes, size: 20),
+                              const SizedBox(width: 5),
+                              Text(
+                                transaction.description,
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              )
+                            ],
+                          )
                       ],
                     ))),
             Text(

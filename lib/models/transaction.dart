@@ -44,7 +44,7 @@ class CashTransaction {
       walletId integer,
       categoryId integer,
       amount double,
-      description text not null,
+      description text,
       date datetime
      ) 
     ''';

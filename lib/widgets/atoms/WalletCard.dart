@@ -25,18 +25,15 @@ class WalletCard extends StatelessWidget {
               child: Row(
                 children: [
                   Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-                    const Icon(Icons.wallet, size: 30),
+                    const Icon(Icons.wallet, size: 25),
                     const SizedBox(width: 10),
                     Text(wallet.name, style: const TextStyle(fontSize: 20)),
                     const SizedBox(width: 10),
                     Text('${wallet.balance.toString()}€',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        )),
+                        style: const TextStyle(fontSize: 18))
                   ]),
                   const Spacer(),
-                  const Icon(Icons.chevron_right)
+                  const Icon(Icons.chevron_right, size: 20)
                 ],
               ),
             )));

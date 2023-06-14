@@ -40,6 +40,7 @@ class _TransactionCreateScreenState extends State<TransactionCreateScreen> {
     _walletItems = widget.wallets
         .map((wallet) => SelectableItem(text: wallet.name, value: wallet))
         .toList();
+    _selectedWallet = widget.wallets[0];
     _categoryController = TextEditingController();
     updateSelectedDate(_selectedDate);
   }
@@ -61,6 +62,7 @@ class _TransactionCreateScreenState extends State<TransactionCreateScreen> {
 
   void close() {
     CashTransaction? transaction;
+
     if (_amountController.text.isNotEmpty &&
         _selectedCategory != null &&
         _selectedWallet != null) {

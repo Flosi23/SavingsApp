@@ -26,10 +26,15 @@ class _WalletOverviewScreenState extends State<WalletOverviewScreen>
     with TickerProviderStateMixin {
   late Wallet wallet;
   late final TabController _tabController;
+  late TimeSpan _defaultTimeSpan;
 
   @override
   void initState() {
     super.initState();
+    DateTime now = DateTime.now();
+    _defaultTimeSpan = TimeSpan(
+        start: DateTime(now.year, now.month, 1),
+        end: DateTime(now.year, now.month + 1, 1));
     wallet = widget.wallet;
     _tabController = TabController(length: 2, vsync: this);
   }
@@ -138,7 +143,8 @@ class _WalletOverviewScreenState extends State<WalletOverviewScreen>
                   numberColor: null,
                 ),
                 const SizedBox(height: 20),
-                TimeSpanSelector(onChanged: (v) => {}),
+                TimeSpanSelector(
+                    defaultTimeSpan: _defaultTimeSpan, onChanged: (v) => {}),
                 TabBar.secondary(controller: _tabController, tabs: const [
                   Tab(text: "Summary"),
                   Tab(text: "Transactions")

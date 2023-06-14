@@ -26,6 +26,11 @@ class DatabaseService {
     );
   }
 
+  Future<void> deleteDB() async {
+    String path = await getDatabasesPath();
+    return deleteDatabase(path);
+  }
+
   Future<int> insertCashFlowCategory(CashFlowCategory cashFlowCategory) async {
     final Database db = await initializeDB();
     return await db.insert(
@@ -41,31 +46,43 @@ class DatabaseService {
         .toList();
   }
 
-  Future<int> insertWallet(Wallet wallet) async {
+  Future<void> insertWallet(Wallet wallet) async {
     final Database db = await initializeDB();
-    return await db.insert(Wallet.tableName, wallet.toMap());
+    await db.insert(Wallet.tableName, wallet.toMap());
   }
 
-  Future<int> deleteWallet(Wallet wallet) async {
+  Future<void> deleteWallet(Wallet wallet) async {
     final Database db = await initializeDB();
-    return await db.delete(Wallet.tableName, where: "ID = ${wallet.id}");
+
+    db.transaction((txn) async {
+      await txn.delete(CashTransaction.tableName,
+          where: 'walletId = ${wallet.id}');
+      await txn.delete(Wallet.tableName, where: "id = ${wallet.id}");
+    });
   }
 
-  Future<int> updateWallet(Wallet wallet) async {
+  Future<void> updateWallet(Wallet wallet) async {
     final Database db = await initializeDB();
-    return await db.update(Wallet.tableName, wallet.toMap());
+    await db.update(Wallet.tableName, wallet.toMap());
   }
 
   Future<List<Wallet>> retrieveWallets() async {
     final Database db = await initializeDB();
     final List<Map<String, Object?>> queryResult =
         await db.query(Wallet.tableName);
+
     return queryResult.map((result) => Wallet.fromMap(result)).toList();
   }
 
-  Future<int> insertCashTransaction(CashTransaction cashTransaction) async {
+  Future<void> insertCashTransaction(CashTransaction cashTransaction) async {
     final Database db = await initializeDB();
-    return await db.insert(CashTransaction.tableName, cashTransaction.toMap());
+    await db.insert(CashTransaction.tableName, cashTransaction.toMap());
+  }
+
+  Future<void> deleteCashTransaction(CashTransaction cashTransaction) async {
+    final Database db = await initializeDB();
+    await db.delete(CashTransaction.tableName,
+        where: 'id = ${cashTransaction.id}');
   }
 
   Future<List<CashTransaction>> retrieveCashTransactions() async {
