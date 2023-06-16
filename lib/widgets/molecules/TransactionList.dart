@@ -52,8 +52,13 @@ class TransactionList extends StatelessWidget {
     return ListView(
         children: selectedTransactions.entries
             .map((entry) {
+              double sum = entry.value.fold(
+                  0,
+                  (previousValue, transaction) =>
+                      previousValue + transaction.amount);
+
               TransactionDivider transactionDivider =
-                  TransactionDivider(dateString: entry.key, sum: 0);
+                  TransactionDivider(dateString: entry.key, sum: sum);
 
               List<TransactionView> transactions =
                   entry.value.map((transaction) {

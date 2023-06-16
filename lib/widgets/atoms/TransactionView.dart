@@ -18,7 +18,7 @@ class TransactionView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+        margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -64,10 +64,12 @@ class TransactionView extends StatelessWidget {
                           )
                       ],
                     ))),
-            Text(
-              '${transaction.amount}€',
-              style: Theme.of(context).textTheme.bodyLarge,
-            )
+            Text('${transaction.amount.toStringAsFixed(2)}€',
+                style: TextStyle(
+                    fontSize: 15,
+                    color: transaction.amount < 0
+                        ? Colors.redAccent
+                        : Colors.greenAccent))
           ],
         ));
   }

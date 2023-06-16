@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:savings_app/models/category.dart';
 import 'package:savings_app/models/transaction.dart';
 import 'package:savings_app/models/wallet.dart';
+import 'package:savings_app/widgets/atoms/CashFlowCategoryIcon.dart';
+import 'package:savings_app/widgets/atoms/NumberStatCard.dart';
 import 'package:savings_app/widgets/molecules/TimeSpanSelector.dart';
 import 'package:savings_app/widgets/molecules/pie_chart.dart';
 
@@ -26,24 +28,21 @@ enum TransactionType { income, expense }
 
 class _SummaryViewState extends State<SummaryView> {
   TransactionType _selectedTransactionType = TransactionType.expense;
-  Map<CashFlowCategory, double> _categorySums = {};
-  List<SectionData> _chartData = [];
 
   @override
   void initState() {
     super.initState();
-    updateData();
   }
 
   void updateSelectedTransactionType(Set<TransactionType> newTransactionType) {
     setState(() {
       _selectedTransactionType = newTransactionType.first;
     });
-    updateData();
   }
 
-  void updateData() {
-    final Map<CashFlowCategory, double> newCategorySums = {};
+  @override
+  Widget build(BuildContext context) {
+    final Map<CashFlowCategory, double> categorySums = {};
 
     List<CashTransaction> filteredTransactions = widget.transactions
         .where((transaction) => transaction.walletId == widget.wallet.id)
@@ -78,25 +77,20 @@ class _SummaryViewState extends State<SummaryView> {
       CashFlowCategory category = widget.categories
           .where((category) => category.id == transaction.categoryId)
           .first;
-      newCategorySums.update(category, (sum) => sum + transaction.amount,
+      categorySums.update(category, (sum) => sum + transaction.amount,
           ifAbsent: () => transaction.amount);
     }
 
-    final List<SectionData> newChartData = newCategorySums.entries
+    final List<SectionData> chartData = categorySums.entries
         .map((entry) => SectionData(
             value: entry.value,
             color: entry.key.color,
             iconData: entry.key.iconData))
         .toList();
 
-    setState(() {
-      _categorySums = newCategorySums;
-      _chartData = newChartData;
-    });
-  }
+    double sum = filteredTransactions.fold(
+        0, (previousValue, transaction) => previousValue + transaction.amount);
 
-  @override
-  Widget build(BuildContext context) {
     return SingleChildScrollView(
         child: Column(children: [
       const SizedBox(height: 20),
@@ -109,7 +103,54 @@ class _SummaryViewState extends State<SummaryView> {
         selected: {_selectedTransactionType},
         onSelectionChanged: updateSelectedTransactionType,
       ),
-      CategoryPieChart(chartData: _chartData)
+      const SizedBox(height: 15),
+      NumberStatCard(
+          number: sum,
+          description: _selectedTransactionType == TransactionType.income
+              ? "Income"
+              : "Expenses",
+          numberColor: _selectedTransactionType == TransactionType.income
+              ? Colors.greenAccent
+              : Colors.redAccent),
+      CategoryPieChart(chartData: chartData),
+      ...categorySums.entries.map((entry) {
+        int numberOfTransactions = filteredTransactions.fold(
+            0,
+            (previousValue, transaction) =>
+                transaction.categoryId == entry.key.id
+                    ? previousValue + 1
+                    : previousValue);
+
+        return Container(
+            margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: 50,
+                  height: 50,
+                  child: CashFlowCategoryIcon(category: entry.key),
+                ),
+                Expanded(
+                    child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(entry.key.name,
+                          style: Theme.of(context).textTheme.bodyLarge),
+                      Text('$numberOfTransactions transactions',
+                          style: Theme.of(context).textTheme.bodyMedium),
+                    ],
+                  ),
+                )),
+                Text('${entry.value.toStringAsFixed(2)}€',
+                    style: Theme.of(context).textTheme.bodyLarge)
+              ],
+            ));
+      }).toList(),
+      const SizedBox(height: 50)
     ]));
   }
 }

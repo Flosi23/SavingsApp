@@ -29,7 +29,7 @@ class WalletCard extends StatelessWidget {
                     const SizedBox(width: 10),
                     Text(wallet.name, style: const TextStyle(fontSize: 20)),
                     const SizedBox(width: 10),
-                    Text('${wallet.balance.toString()}€',
+                    Text('${wallet.balance.toStringAsFixed(2)}€',
                         style: const TextStyle(fontSize: 18))
                   ]),
                   const Spacer(),

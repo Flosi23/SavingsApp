@@ -156,8 +156,8 @@ class _WalletOverviewScreenState extends State<WalletOverviewScreen>
                 child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const NumberStatCard(
-                  number: 45.56,
+                NumberStatCard(
+                  number: widget.wallet.balance,
                   description: "Wallet Balance",
                   numberColor: null,
                 ),

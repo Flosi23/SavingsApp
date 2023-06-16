@@ -76,7 +76,12 @@ class DatabaseService {
 
   Future<void> insertCashTransaction(CashTransaction cashTransaction) async {
     final Database db = await initializeDB();
-    await db.insert(CashTransaction.tableName, cashTransaction.toMap());
+
+    db.transaction((txn) async {
+      await txn.rawUpdate(
+          'UPDATE ${Wallet.tableName} SET balance = balance + ${cashTransaction.amount} WHERE id = ${cashTransaction.walletId}');
+      await txn.insert(CashTransaction.tableName, cashTransaction.toMap());
+    });
   }
 
   Future<void> deleteCashTransaction(CashTransaction cashTransaction) async {

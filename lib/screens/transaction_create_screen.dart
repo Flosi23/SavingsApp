@@ -67,6 +67,10 @@ class _TransactionCreateScreenState extends State<TransactionCreateScreen> {
         _selectedCategory != null &&
         _selectedWallet != null) {
       double amount = double.parse(_amountController.text);
+      if (!_selectedCategory!.isIncomeCategory) {
+        amount *= -1;
+      }
+
       transaction = CashTransaction(
           id: 0,
           walletId: _selectedWallet!.id,
@@ -150,7 +154,7 @@ class _TransactionCreateScreenState extends State<TransactionCreateScreen> {
                 keyboardType: TextInputType.number,
                 controller: _amountController,
                 decoration: const InputDecoration(
-                    hintText: "Cost", border: InputBorder.none),
+                    border: InputBorder.none, hintText: "Amount"),
               )),
               const Divider(),
               InputRow(
