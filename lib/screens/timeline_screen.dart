@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:savings_app/models/category.dart';
 import 'package:savings_app/models/transaction.dart';
 import 'package:savings_app/models/wallet.dart';
 import 'package:savings_app/screens/transaction_create_screen.dart';
 import 'package:savings_app/services/db.dart';
 import 'package:savings_app/widgets/atoms/ScreenContainer.dart';
-import 'package:savings_app/widgets/atoms/TransactionDivider.dart';
-import 'package:savings_app/widgets/atoms/TransactionView.dart';
 import 'package:savings_app/widgets/molecules/TimeSpanSelector.dart';
+import 'package:savings_app/widgets/molecules/TransactionList.dart';
 
 class TimelineScreen extends StatefulWidget {
   const TimelineScreen({super.key});
@@ -22,7 +20,6 @@ class _TimelineScreenState extends State<TimelineScreen> {
   List<Wallet> _wallets = [];
   List<CashTransaction> _transactions = [];
   List<CashFlowCategory> _categories = [];
-  Map<String, List<CashTransaction>> _selectedTransactions = {};
   late TimeSpan _selectedTimeSpan;
   late TimeSpan _defaultTimeSpan;
 
@@ -55,41 +52,12 @@ class _TimelineScreenState extends State<TimelineScreen> {
     setState(() {
       _transactions = transactions;
     });
-    updateSelectedTransactions();
-  }
-
-  void updateSelectedTransactions() {
-    List<CashTransaction> filteredTransactions = _transactions
-        .where((transaction) =>
-            (transaction.date.isAtSameMomentAs(_selectedTimeSpan.start) ||
-                transaction.date.isAfter(_selectedTimeSpan.start)) &&
-            transaction.date.isBefore(_selectedTimeSpan.end))
-        .toList();
-
-    Map<String, List<CashTransaction>> newSelectedTransactions = {};
-
-    for (var transaction in filteredTransactions) {
-      DateFormat dateFormat = DateFormat("MMMM dd");
-      String dateString = dateFormat.format(transaction.date);
-
-      newSelectedTransactions.update(dateString, (list) {
-        list.add(transaction);
-        return list;
-      }, ifAbsent: () => [transaction]);
-    }
-
-    debugPrint("newSelectedTransactions: $newSelectedTransactions");
-
-    setState(() {
-      _selectedTransactions = newSelectedTransactions;
-    });
   }
 
   void updateSelectedTimeSpan(TimeSpan newTimeSpan) {
     setState(() {
       _selectedTimeSpan = newTimeSpan;
     });
-    updateSelectedTransactions();
   }
 
   void showAddTransactionScreen() async {
@@ -129,33 +97,12 @@ class _TimelineScreenState extends State<TimelineScreen> {
                 defaultTimeSpan: _defaultTimeSpan,
                 onChanged: updateSelectedTimeSpan),
             Expanded(
-                child: ListView(
-                    children: _selectedTransactions.entries
-                        .map((entry) {
-                          TransactionDivider transactionDivider =
-                              TransactionDivider(dateString: entry.key, sum: 0);
-
-                          List<TransactionView> transactions =
-                              entry.value.map((transaction) {
-                            Wallet wallet = _wallets
-                                .where((wallet) =>
-                                    wallet.id == transaction.walletId)
-                                .first;
-                            CashFlowCategory category = _categories
-                                .where((category) =>
-                                    category.id == transaction.categoryId)
-                                .first;
-
-                            return TransactionView(
-                                transaction: transaction,
-                                wallet: wallet,
-                                category: category);
-                          }).toList();
-
-                          return [transactionDivider, ...transactions];
-                        })
-                        .expand((e) => e)
-                        .toList()))
+                child: TransactionList(
+              categories: _categories,
+              wallets: _wallets,
+              transactions: _transactions,
+              timeSpan: _selectedTimeSpan,
+            ))
           ],
         )),
         floatingActionButton: FloatingActionButton(

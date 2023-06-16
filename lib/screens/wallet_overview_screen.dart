@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:savings_app/models/category.dart';
+import 'package:savings_app/models/transaction.dart';
 import 'package:savings_app/models/wallet.dart';
 import 'package:savings_app/widgets/atoms/NumberStatCard.dart';
+import 'package:savings_app/widgets/molecules/SummaryView.dart';
 import 'package:savings_app/widgets/molecules/TimeSpanSelector.dart';
+import 'package:savings_app/widgets/molecules/TransactionList.dart';
 
 enum WalletOverviewScreenAction { edit, delete }
 
@@ -14,9 +18,15 @@ class WalletOverviewScreenResult {
 }
 
 class WalletOverviewScreen extends StatefulWidget {
-  const WalletOverviewScreen({super.key, required this.wallet});
+  const WalletOverviewScreen(
+      {super.key,
+      required this.wallet,
+      required this.transactions,
+      required this.categories});
 
   final Wallet wallet;
+  final List<CashTransaction> transactions;
+  final List<CashFlowCategory> categories;
 
   @override
   State<StatefulWidget> createState() => _WalletOverviewScreenState();
@@ -24,9 +34,11 @@ class WalletOverviewScreen extends StatefulWidget {
 
 class _WalletOverviewScreenState extends State<WalletOverviewScreen>
     with TickerProviderStateMixin {
-  late Wallet wallet;
+  late Wallet _wallet;
   late final TabController _tabController;
+
   late TimeSpan _defaultTimeSpan;
+  late TimeSpan _selectedTimeSpan;
 
   @override
   void initState() {
@@ -35,7 +47,8 @@ class _WalletOverviewScreenState extends State<WalletOverviewScreen>
     _defaultTimeSpan = TimeSpan(
         start: DateTime(now.year, now.month, 1),
         end: DateTime(now.year, now.month + 1, 1));
-    wallet = widget.wallet;
+    _selectedTimeSpan = _defaultTimeSpan;
+    _wallet = widget.wallet;
     _tabController = TabController(length: 2, vsync: this);
   }
 
@@ -45,24 +58,30 @@ class _WalletOverviewScreenState extends State<WalletOverviewScreen>
     super.dispose();
   }
 
+  void updateSelectedTimeSpan(TimeSpan newTimeSpan) {
+    setState(() {
+      _selectedTimeSpan = newTimeSpan;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     void deleteWallet() {
       WalletOverviewScreenResult returnValue = WalletOverviewScreenResult(
-          action: WalletOverviewScreenAction.delete, wallet: wallet);
+          action: WalletOverviewScreenAction.delete, wallet: _wallet);
 
       Navigator.pop(context, returnValue);
     }
 
     void editWallet(String newName) {
       setState(() {
-        wallet.name = newName;
+        _wallet.name = newName;
       });
     }
 
     void onPop() {
       WalletOverviewScreenResult returnValue = WalletOverviewScreenResult(
-          action: WalletOverviewScreenAction.edit, wallet: wallet);
+          action: WalletOverviewScreenAction.edit, wallet: _wallet);
 
       Navigator.pop(context, returnValue);
     }
@@ -123,7 +142,7 @@ class _WalletOverviewScreenState extends State<WalletOverviewScreen>
             appBar: AppBar(
               leading: BackButton(onPressed: onPop),
               centerTitle: true,
-              title: Text(wallet.name),
+              title: Text(_wallet.name),
               actions: [
                 IconButton(
                     onPressed: showEditWalletDialog,
@@ -144,16 +163,26 @@ class _WalletOverviewScreenState extends State<WalletOverviewScreen>
                 ),
                 const SizedBox(height: 20),
                 TimeSpanSelector(
-                    defaultTimeSpan: _defaultTimeSpan, onChanged: (v) => {}),
+                    defaultTimeSpan: _defaultTimeSpan,
+                    onChanged: updateSelectedTimeSpan),
                 TabBar.secondary(controller: _tabController, tabs: const [
                   Tab(text: "Summary"),
                   Tab(text: "Transactions")
                 ]),
                 Expanded(
-                    child:
-                        TabBarView(controller: _tabController, children: const [
-                  const Text("nice"),
-                  const Text("lol"),
+                    child: TabBarView(controller: _tabController, children: [
+                  SummaryView(
+                    transactions: widget.transactions,
+                    categories: widget.categories,
+                    wallet: _wallet,
+                    timeSpan: _selectedTimeSpan,
+                  ),
+                  TransactionList(
+                    categories: widget.categories,
+                    wallets: [_wallet],
+                    transactions: widget.transactions,
+                    timeSpan: _selectedTimeSpan,
+                  )
                 ]))
               ],
             ))));

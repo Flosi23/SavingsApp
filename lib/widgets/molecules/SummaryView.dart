@@ -1,0 +1,115 @@
+import 'package:flutter/material.dart';
+import 'package:savings_app/models/category.dart';
+import 'package:savings_app/models/transaction.dart';
+import 'package:savings_app/models/wallet.dart';
+import 'package:savings_app/widgets/molecules/TimeSpanSelector.dart';
+import 'package:savings_app/widgets/molecules/pie_chart.dart';
+
+class SummaryView extends StatefulWidget {
+  const SummaryView(
+      {super.key,
+      required this.transactions,
+      required this.categories,
+      required this.wallet,
+      this.timeSpan});
+
+  final List<CashTransaction> transactions;
+  final List<CashFlowCategory> categories;
+  final Wallet wallet;
+  final TimeSpan? timeSpan;
+
+  @override
+  State<StatefulWidget> createState() => _SummaryViewState();
+}
+
+enum TransactionType { income, expense }
+
+class _SummaryViewState extends State<SummaryView> {
+  TransactionType _selectedTransactionType = TransactionType.expense;
+  Map<CashFlowCategory, double> _categorySums = {};
+  List<SectionData> _chartData = [];
+
+  @override
+  void initState() {
+    super.initState();
+    updateData();
+  }
+
+  void updateSelectedTransactionType(Set<TransactionType> newTransactionType) {
+    setState(() {
+      _selectedTransactionType = newTransactionType.first;
+    });
+    updateData();
+  }
+
+  void updateData() {
+    final Map<CashFlowCategory, double> newCategorySums = {};
+
+    List<CashTransaction> filteredTransactions = widget.transactions
+        .where((transaction) => transaction.walletId == widget.wallet.id)
+        .toList();
+
+    filteredTransactions = filteredTransactions.where((transaction) {
+      CashFlowCategory category = widget.categories
+          .where((category) => category.id == transaction.categoryId)
+          .first;
+
+      if (_selectedTransactionType == TransactionType.expense) {
+        return category.isIncomeCategory == false;
+      }
+
+      if (_selectedTransactionType == TransactionType.income) {
+        return category.isIncomeCategory == true;
+      }
+
+      return false;
+    }).toList();
+
+    if (widget.timeSpan != null) {
+      filteredTransactions = filteredTransactions
+          .where((transaction) =>
+              (transaction.date.isAtSameMomentAs(widget.timeSpan!.start) ||
+                  transaction.date.isAfter(widget.timeSpan!.start)) &&
+              transaction.date.isBefore(widget.timeSpan!.end))
+          .toList();
+    }
+
+    for (var transaction in filteredTransactions) {
+      CashFlowCategory category = widget.categories
+          .where((category) => category.id == transaction.categoryId)
+          .first;
+      newCategorySums.update(category, (sum) => sum + transaction.amount,
+          ifAbsent: () => transaction.amount);
+    }
+
+    final List<SectionData> newChartData = newCategorySums.entries
+        .map((entry) => SectionData(
+            value: entry.value,
+            color: entry.key.color,
+            iconData: entry.key.iconData))
+        .toList();
+
+    setState(() {
+      _categorySums = newCategorySums;
+      _chartData = newChartData;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+        child: Column(children: [
+      const SizedBox(height: 20),
+      SegmentedButton(
+        segments: const [
+          ButtonSegment(
+              value: TransactionType.expense, label: Text("Expenses")),
+          ButtonSegment(value: TransactionType.income, label: Text("Income")),
+        ],
+        selected: {_selectedTransactionType},
+        onSelectionChanged: updateSelectedTransactionType,
+      ),
+      CategoryPieChart(chartData: _chartData)
+    ]));
+  }
+}

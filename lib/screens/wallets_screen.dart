@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:savings_app/models/category.dart';
+import 'package:savings_app/models/transaction.dart';
 import 'package:savings_app/models/wallet.dart';
 import 'package:savings_app/screens/wallet_create_screen.dart';
 import 'package:savings_app/screens/wallet_overview_screen.dart';
@@ -15,12 +17,34 @@ class WalletsScreen extends StatefulWidget {
 
 class _WalletsScreenState extends State<WalletsScreen> {
   final DatabaseService _databaseService = DatabaseService();
-  late Future<List<Wallet>> _wallets;
+  List<Wallet> _wallets = [];
+  List<CashTransaction> _transactions = [];
+  List<CashFlowCategory> _categories = [];
 
   @override
   void initState() {
     super.initState();
-    _wallets = _databaseService.retrieveWallets();
+    retrieveFromDB();
+  }
+
+  void retrieveFromDB() async {
+    List<CashFlowCategory> categories =
+        await _databaseService.retrieveCashFlowCategories();
+    List<CashTransaction> transactions =
+        await _databaseService.retrieveCashTransactions();
+
+    setState(() {
+      _categories = categories;
+      _transactions = transactions;
+    });
+    retrieveWallets();
+  }
+
+  void retrieveWallets() async {
+    List<Wallet> wallets = await _databaseService.retrieveWallets();
+    setState(() {
+      _wallets = wallets;
+    });
   }
 
   void showCreateWalletScreen() async {
@@ -28,17 +52,18 @@ class _WalletsScreenState extends State<WalletsScreen> {
         MaterialPageRoute(builder: (context) => const WalletCreateScreen()));
 
     await _databaseService.insertWallet(result);
-
-    setState(() {
-      _wallets = _databaseService.retrieveWallets();
-    });
+    retrieveWallets();
   }
 
   void onWalletCardTap(Wallet wallet) async {
     WalletOverviewScreenResult result = await Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => WalletOverviewScreen(wallet: wallet)));
+            builder: (context) => WalletOverviewScreen(
+                  wallet: wallet,
+                  transactions: _transactions,
+                  categories: _categories,
+                )));
 
     switch (result.action) {
       case WalletOverviewScreenAction.delete:
@@ -53,9 +78,7 @@ class _WalletsScreenState extends State<WalletsScreen> {
         }
     }
 
-    setState(() {
-      _wallets = _databaseService.retrieveWallets();
-    });
+    retrieveWallets();
   }
 
   @override
@@ -63,28 +86,11 @@ class _WalletsScreenState extends State<WalletsScreen> {
     return Scaffold(
       appBar: AppBar(centerTitle: false, title: const Text("Wallets")),
       body: ScreenContainer(
-          child: FutureBuilder<List<Wallet>>(
-              future: _wallets,
-              builder: (context, snapshot) {
-                if (snapshot.hasError) {
-                  return Text('${snapshot.error}');
-                }
-
-                if (snapshot.hasData && snapshot.data!.isEmpty) {
-                  return const Text(
-                      "There are no wallets. Tap the + Button to create one");
-                }
-
-                if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-                  return ListView(
-                      children: snapshot.data!
-                          .map((wallet) => WalletCard(
-                              wallet: wallet, onTap: onWalletCardTap))
-                          .toList());
-                }
-                // By default, show a loading spinner.
-                return const CircularProgressIndicator();
-              })),
+          child: ListView(
+              children: _wallets
+                  .map((wallet) =>
+                      WalletCard(wallet: wallet, onTap: onWalletCardTap))
+                  .toList())),
       floatingActionButton: FloatingActionButton(
           onPressed: showCreateWalletScreen, child: const Icon(Icons.add)),
     );
