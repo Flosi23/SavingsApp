@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:savings_app/models/category.dart';
 
@@ -56,8 +54,7 @@ List<CashFlowCategory> _defaultExpenseCategories() {
         name: category.name,
         color: colors[index % colors.length],
         iconData: category.iconData,
-        isIncomeCategory: false
-    );
+        type: CashFlowCategoryType.expense);
   }).toList();
 }
 
@@ -81,11 +78,27 @@ List<CashFlowCategory> _defaultIncomeCategories() {
         name: category.name,
         color: colors[index % colors.length],
         iconData: category.iconData,
-        isIncomeCategory: true
-    );
+        type: CashFlowCategoryType.income);
   }).toList();
 }
 
+List<CashFlowCategory> _defaultTransferCategories() {
+  var colors = _colors();
+
+  return [
+    CashFlowCategory(
+        id: 0,
+        name: "Wallet Transfer",
+        color: colors[0],
+        iconData: Icons.swap_horiz,
+        type: CashFlowCategoryType.transfer)
+  ];
+}
+
 List<CashFlowCategory> getDefaultCashFlowCategories() {
-  return [..._defaultExpenseCategories(), ..._defaultIncomeCategories()];
+  return [
+    ..._defaultExpenseCategories(),
+    ..._defaultIncomeCategories(),
+    ..._defaultTransferCategories()
+  ];
 }

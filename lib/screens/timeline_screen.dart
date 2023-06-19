@@ -26,6 +26,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
   @override
   void initState() {
     super.initState();
+    _databaseService.deleteDB();
     DateTime now = DateTime.now();
     _defaultTimeSpan = TimeSpan(
         start: DateTime(now.year, now.month, 1),

@@ -3,13 +3,6 @@ import 'package:savings_app/widgets/atoms/CashFlowCategoryIcon.dart';
 
 import '../../models/category.dart';
 
-class SelectCategoryResult {
-  const SelectCategoryResult({this.category, required this.categoryType});
-
-  final CashFlowCategory? category;
-  final CashFlowCategoryType categoryType;
-}
-
 class SelectCategory extends StatefulWidget {
   const SelectCategory({super.key, required this.categories});
 
@@ -18,8 +11,6 @@ class SelectCategory extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _SelectCategoryState();
 }
-
-enum CashFlowCategoryType { income, expense, transfer }
 
 class _SelectCategoryState extends State<SelectCategory> {
   CashFlowCategoryType _selectedCategoryType = CashFlowCategoryType.expense;
@@ -48,25 +39,14 @@ class _SelectCategoryState extends State<SelectCategory> {
 
   void changeSelectedCategories() {
     setState(() {
-      _selectedCategories = widget.categories.where((category) {
-        if (_selectedCategoryType == CashFlowCategoryType.expense) {
-          return !category.isIncomeCategory;
-        }
-
-        if (_selectedCategoryType == CashFlowCategoryType.income) {
-          return category.isIncomeCategory;
-        }
-
-        return false;
-      }).toList();
+      _selectedCategories = widget.categories
+          .where((category) => category.type == _selectedCategoryType)
+          .toList();
     });
   }
 
   void close() {
-    SelectCategoryResult result = SelectCategoryResult(
-        category: _selectedCategory, categoryType: _selectedCategoryType);
-
-    Navigator.pop(context, result);
+    Navigator.pop(context, _selectedCategory);
   }
 
   @override

@@ -48,21 +48,12 @@ class _SummaryViewState extends State<SummaryView> {
         .where((transaction) => transaction.walletId == widget.wallet.id)
         .toList();
 
-    filteredTransactions = filteredTransactions.where((transaction) {
-      CashFlowCategory category = widget.categories
-          .where((category) => category.id == transaction.categoryId)
-          .first;
-
-      if (_selectedTransactionType == TransactionType.expense) {
-        return category.isIncomeCategory == false;
-      }
-
-      if (_selectedTransactionType == TransactionType.income) {
-        return category.isIncomeCategory == true;
-      }
-
-      return false;
-    }).toList();
+    filteredTransactions = filteredTransactions
+        .where((transaction) =>
+            _selectedTransactionType == TransactionType.income
+                ? transaction.amount > 0
+                : transaction.amount < 0)
+        .toList();
 
     if (widget.timeSpan != null) {
       filteredTransactions = filteredTransactions

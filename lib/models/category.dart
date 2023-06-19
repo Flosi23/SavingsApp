@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:savings_app/util/IconData.dart';
 
+enum CashFlowCategoryType { expense, income, transfer }
+
 class CashFlowCategory {
   final int id;
   final String name;
   final Color color;
   final IconData iconData;
-  final bool isIncomeCategory;
+  final CashFlowCategoryType type;
 
   static String tableName = 'cash_flow_category';
 
@@ -15,7 +17,7 @@ class CashFlowCategory {
     required this.name,
     required this.color,
     required this.iconData,
-    required this.isIncomeCategory,
+    required this.type,
   });
 
   Map<String, dynamic> toMap() {
@@ -23,7 +25,7 @@ class CashFlowCategory {
       'name': name,
       'color': color.value,
       'iconData': iconDataToJSONString(iconData),
-      'isIncomeCategory': isIncomeCategory
+      'type': type.name,
     };
   }
 
@@ -33,7 +35,8 @@ class CashFlowCategory {
       name: map['name'],
       color: Color(map['color']),
       iconData: iconDatafromJSONString(map['iconData']),
-      isIncomeCategory: map['isIncomeCategory'] == 1
+      type: CashFlowCategoryType.values
+          .firstWhere((element) => element.name == map['type']),
     );
   }
 
@@ -44,7 +47,7 @@ class CashFlowCategory {
         name text not null,
         color integer,
         iconData text not null,
-        isIncomeCategory integer 
+        type text not null
       ) 
     ''';
   }

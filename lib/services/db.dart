@@ -63,7 +63,8 @@ class DatabaseService {
 
   Future<void> updateWallet(Wallet wallet) async {
     final Database db = await initializeDB();
-    await db.update(Wallet.tableName, wallet.toMap());
+    await db.update(Wallet.tableName, wallet.toMap(),
+        where: "id = ${wallet.id}");
   }
 
   Future<List<Wallet>> retrieveWallets() async {

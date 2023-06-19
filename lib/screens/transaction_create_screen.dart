@@ -67,7 +67,7 @@ class _TransactionCreateScreenState extends State<TransactionCreateScreen> {
         _selectedCategory != null &&
         _selectedWallet != null) {
       double amount = double.parse(_amountController.text);
-      if (!_selectedCategory!.isIncomeCategory) {
+      if (_selectedCategory!.type == CashFlowCategoryType.expense) {
         amount *= -1;
       }
 
@@ -120,16 +120,15 @@ class _TransactionCreateScreenState extends State<TransactionCreateScreen> {
     }
 
     void openCategorySelection() async {
-      SelectCategoryResult? result =
-          await showModalBottomSheet<SelectCategoryResult>(
-              context: context,
-              builder: (BuildContext context) {
-                return SelectCategory(categories: widget.categories);
-              });
+      CashFlowCategory? result = await showModalBottomSheet<CashFlowCategory>(
+          context: context,
+          builder: (BuildContext context) {
+            return SelectCategory(categories: widget.categories);
+          });
 
       if (result == null) return;
 
-      updateSelectedCategory(result.category);
+      updateSelectedCategory(result);
     }
 
     return Scaffold(
