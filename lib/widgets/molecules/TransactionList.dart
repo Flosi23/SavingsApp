@@ -36,7 +36,7 @@ class TransactionList extends StatelessWidget {
           .toList();
     }
 
-    transactions.sort(
+    filteredTransactions.sort(
         (CashTransaction a, CashTransaction b) => b.date.compareTo(a.date));
 
     Map<String, List<CashTransaction>> selectedTransactions = {};

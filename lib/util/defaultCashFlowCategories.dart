@@ -3,13 +3,13 @@ import 'package:savings_app/models/category.dart';
 import 'package:savings_app/models/transaction.dart';
 
 List<Color> _colors() {
-  const mindaro = Color(0xffBCE784);
-  const emerald = Color(0xff5dd39e);
-  const blue = Color(0xff348AA7);
-  const ultraViolet = Color(0xff525174);
-  const englishViolet = Color(0xff513B56);
+  const one = Color(0xff8da1b9);
+  const two = Color(0xff95adb6);
+  const three = Color(0xffCBB3BF);
+  const four = Color(0xffDBC7BE);
+  const five = Color(0xffEF959C);
 
-  return [mindaro, emerald, blue, ultraViolet, englishViolet];
+  return [one, two, three, four, five];
 }
 
 class ReducedCategory {

@@ -56,7 +56,7 @@ class DatabaseService {
 
     db.transaction((txn) async {
       await txn.delete(CashTransaction.tableName,
-          where: 'fromWalletId = ${wallet.id} OR toWalletId = ${wallet.id}');
+          where: 'walletId = ${wallet.id}');
       await txn.delete(Wallet.tableName, where: "id = ${wallet.id}");
     });
   }
