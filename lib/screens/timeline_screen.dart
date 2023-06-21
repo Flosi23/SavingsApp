@@ -26,7 +26,6 @@ class _TimelineScreenState extends State<TimelineScreen> {
   @override
   void initState() {
     super.initState();
-    _databaseService.deleteDB();
     DateTime now = DateTime.now();
     _defaultTimeSpan = TimeSpan(
         start: DateTime(now.year, now.month, 1),
@@ -62,7 +61,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
   }
 
   void showAddTransactionScreen() async {
-    CashTransaction? transaction = await Navigator.push(
+    List<CashTransaction> transactions = await Navigator.push(
         context,
         MaterialPageRoute(
             builder: (context) => TransactionCreateScreen(
@@ -70,10 +69,11 @@ class _TimelineScreenState extends State<TimelineScreen> {
                   categories: _categories,
                 )));
 
-    if (transaction != null) {
+    for (CashTransaction transaction in transactions) {
       await _databaseService.insertCashTransaction(transaction);
-      retrieveTransactions();
     }
+
+    retrieveTransactions();
   }
 
   @override

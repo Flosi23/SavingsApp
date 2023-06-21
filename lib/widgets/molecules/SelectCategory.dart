@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:savings_app/models/transaction.dart';
 import 'package:savings_app/widgets/atoms/CashFlowCategoryIcon.dart';
 
 import '../../models/category.dart';
@@ -13,7 +14,7 @@ class SelectCategory extends StatefulWidget {
 }
 
 class _SelectCategoryState extends State<SelectCategory> {
-  CashFlowCategoryType _selectedCategoryType = CashFlowCategoryType.expense;
+  CashTransactionType _selectedCategoryType = CashTransactionType.expense;
   CashFlowCategory? _selectedCategory;
   List<CashFlowCategory> _selectedCategories = [];
 
@@ -23,7 +24,7 @@ class _SelectCategoryState extends State<SelectCategory> {
     changeSelectedCategories();
   }
 
-  void changeCategoryType(Set<CashFlowCategoryType> newSelection) {
+  void changeCategoryType(Set<CashTransactionType> newSelection) {
     setState(() {
       _selectedCategoryType = newSelection.first;
     });
@@ -61,10 +62,10 @@ class _SelectCategoryState extends State<SelectCategory> {
                 SegmentedButton(
                   segments: const [
                     ButtonSegment(
-                        value: CashFlowCategoryType.expense,
+                        value: CashTransactionType.expense,
                         label: Text("Expense")),
                     ButtonSegment(
-                        value: CashFlowCategoryType.income,
+                        value: CashTransactionType.income,
                         label: Text("Income")),
                   ],
                   selected: {_selectedCategoryType},
@@ -73,7 +74,7 @@ class _SelectCategoryState extends State<SelectCategory> {
                 SegmentedButton(
                   segments: const [
                     ButtonSegment(
-                        value: CashFlowCategoryType.transfer,
+                        value: CashTransactionType.transfer,
                         label: Text("Transfer")),
                   ],
                   selected: {_selectedCategoryType},

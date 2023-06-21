@@ -21,10 +21,12 @@ class WalletOverviewScreen extends StatefulWidget {
   const WalletOverviewScreen(
       {super.key,
       required this.wallet,
+      required this.wallets,
       required this.transactions,
       required this.categories});
 
   final Wallet wallet;
+  final List<Wallet> wallets;
   final List<CashTransaction> transactions;
   final List<CashFlowCategory> categories;
 
@@ -179,7 +181,7 @@ class _WalletOverviewScreenState extends State<WalletOverviewScreen>
                   ),
                   TransactionList(
                     categories: widget.categories,
-                    wallets: [_wallet],
+                    wallets: widget.wallets,
                     transactions: widget.transactions,
                     timeSpan: _selectedTimeSpan,
                   )

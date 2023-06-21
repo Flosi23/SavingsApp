@@ -56,7 +56,7 @@ class DatabaseService {
 
     db.transaction((txn) async {
       await txn.delete(CashTransaction.tableName,
-          where: 'walletId = ${wallet.id}');
+          where: 'fromWalletId = ${wallet.id} OR toWalletId = ${wallet.id}');
       await txn.delete(Wallet.tableName, where: "id = ${wallet.id}");
     });
   }
@@ -80,7 +80,9 @@ class DatabaseService {
 
     db.transaction((txn) async {
       await txn.rawUpdate(
-          'UPDATE ${Wallet.tableName} SET balance = balance + ${cashTransaction.amount} WHERE id = ${cashTransaction.walletId}');
+          'UPDATE ${Wallet.tableName} SET balance = balance - ${cashTransaction.amount} WHERE id = ${cashTransaction.fromWalletId}');
+      await txn.rawUpdate(
+          'UPDATE ${Wallet.tableName} SET balance = balance + ${cashTransaction.amount} WHERE id = ${cashTransaction.toWalletId}');
       await txn.insert(CashTransaction.tableName, cashTransaction.toMap());
     });
   }

@@ -24,17 +24,16 @@ class SummaryView extends StatefulWidget {
   State<StatefulWidget> createState() => _SummaryViewState();
 }
 
-enum TransactionType { income, expense }
-
 class _SummaryViewState extends State<SummaryView> {
-  TransactionType _selectedTransactionType = TransactionType.expense;
+  CashTransactionType _selectedTransactionType = CashTransactionType.expense;
 
   @override
   void initState() {
     super.initState();
   }
 
-  void updateSelectedTransactionType(Set<TransactionType> newTransactionType) {
+  void updateSelectedTransactionType(
+      Set<CashTransactionType> newTransactionType) {
     setState(() {
       _selectedTransactionType = newTransactionType.first;
     });
@@ -45,14 +44,16 @@ class _SummaryViewState extends State<SummaryView> {
     final Map<CashFlowCategory, double> categorySums = {};
 
     List<CashTransaction> filteredTransactions = widget.transactions
-        .where((transaction) => transaction.walletId == widget.wallet.id)
+        .where((transaction) =>
+            transaction.toWalletId == widget.wallet.id ||
+            transaction.fromWalletId == widget.wallet.id)
         .toList();
 
     filteredTransactions = filteredTransactions
         .where((transaction) =>
-            _selectedTransactionType == TransactionType.income
-                ? transaction.amount > 0
-                : transaction.amount < 0)
+            _selectedTransactionType == CashTransactionType.income
+                ? transaction.toWalletId == widget.wallet.id
+                : transaction.fromWalletId == widget.wallet.id)
         .toList();
 
     if (widget.timeSpan != null) {
@@ -65,9 +66,12 @@ class _SummaryViewState extends State<SummaryView> {
     }
 
     for (var transaction in filteredTransactions) {
-      CashFlowCategory category = widget.categories
+      CashFlowCategory? category = widget.categories
           .where((category) => category.id == transaction.categoryId)
-          .first;
+          .firstOrNull;
+
+      if (category == null) continue;
+
       categorySums.update(category, (sum) => sum + transaction.amount,
           ifAbsent: () => transaction.amount);
     }
@@ -82,14 +86,17 @@ class _SummaryViewState extends State<SummaryView> {
     double sum = filteredTransactions.fold(
         0, (previousValue, transaction) => previousValue + transaction.amount);
 
+    debugPrint("chartData: $chartData");
+
     return SingleChildScrollView(
         child: Column(children: [
       const SizedBox(height: 20),
       SegmentedButton(
         segments: const [
           ButtonSegment(
-              value: TransactionType.expense, label: Text("Expenses")),
-          ButtonSegment(value: TransactionType.income, label: Text("Income")),
+              value: CashTransactionType.expense, label: Text("Expenses")),
+          ButtonSegment(
+              value: CashTransactionType.income, label: Text("Income")),
         ],
         selected: {_selectedTransactionType},
         onSelectionChanged: updateSelectedTransactionType,
@@ -97,10 +104,10 @@ class _SummaryViewState extends State<SummaryView> {
       const SizedBox(height: 15),
       NumberStatCard(
           number: sum,
-          description: _selectedTransactionType == TransactionType.income
+          description: _selectedTransactionType == CashTransactionType.income
               ? "Income"
               : "Expenses",
-          numberColor: _selectedTransactionType == TransactionType.income
+          numberColor: _selectedTransactionType == CashTransactionType.income
               ? Colors.greenAccent
               : Colors.redAccent),
       CategoryPieChart(chartData: chartData),

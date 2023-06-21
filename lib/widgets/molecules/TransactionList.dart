@@ -55,24 +55,18 @@ class TransactionList extends StatelessWidget {
               double sum = entry.value.fold(
                   0,
                   (previousValue, transaction) =>
-                      previousValue + transaction.amount);
+                      transaction.type != CashTransactionType.transfer
+                          ? previousValue + transaction.amount
+                          : previousValue);
 
               TransactionDivider transactionDivider =
                   TransactionDivider(dateString: entry.key, sum: sum);
 
-              List<TransactionView> transactions =
-                  entry.value.map((transaction) {
-                Wallet wallet = wallets
-                    .where((wallet) => wallet.id == transaction.walletId)
-                    .first;
-                CashFlowCategory category = categories
-                    .where((category) => category.id == transaction.categoryId)
-                    .first;
-
+              List<Widget> transactions = entry.value.map((transaction) {
                 return TransactionView(
                     transaction: transaction,
-                    wallet: wallet,
-                    category: category);
+                    wallets: wallets,
+                    categories: categories);
               }).toList();
 
               return [transactionDivider, ...transactions];

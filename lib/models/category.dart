@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:savings_app/models/transaction.dart';
 import 'package:savings_app/util/IconData.dart';
-
-enum CashFlowCategoryType { expense, income, transfer }
 
 class CashFlowCategory {
   final int id;
   final String name;
   final Color color;
   final IconData iconData;
-  final CashFlowCategoryType type;
+  final CashTransactionType type;
 
   static String tableName = 'cash_flow_category';
 
@@ -35,7 +34,7 @@ class CashFlowCategory {
       name: map['name'],
       color: Color(map['color']),
       iconData: iconDatafromJSONString(map['iconData']),
-      type: CashFlowCategoryType.values
+      type: CashTransactionType.values
           .firstWhere((element) => element.name == map['type']),
     );
   }

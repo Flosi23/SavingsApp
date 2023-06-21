@@ -8,15 +8,34 @@ class TransactionView extends StatelessWidget {
   const TransactionView(
       {super.key,
       required this.transaction,
-      required this.wallet,
-      required this.category});
+      required this.wallets,
+      required this.categories});
 
   final CashTransaction transaction;
-  final Wallet wallet;
-  final CashFlowCategory category;
+  final List<Wallet> wallets;
+  final List<CashFlowCategory> categories;
 
   @override
   Widget build(BuildContext context) {
+    CashFlowCategory? category = categories
+        .where((category) => category.id == transaction.categoryId)
+        .firstOrNull;
+
+    if (category == null) return Container();
+
+    Wallet? fromWallet = wallets
+        .where((wallet) => wallet.id == transaction.fromWalletId)
+        .firstOrNull;
+    Wallet? toWallet = wallets
+        .where((wallet) => wallet.id == transaction.toWalletId)
+        .firstOrNull;
+
+    String fromWalletString = fromWallet != null ? fromWallet.name : "";
+    String toWalletString = toWallet != null ? toWallet.name : "";
+    String walletText = transaction.type == CashTransactionType.transfer
+        ? "from $fromWalletString to $toWalletString"
+        : "$fromWalletString$toWalletString";
+
     return Container(
         margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
         child: Row(
@@ -46,7 +65,7 @@ class TransactionView extends StatelessWidget {
                               size: 20,
                             ),
                             const SizedBox(width: 5),
-                            Text(wallet.name,
+                            Text(walletText,
                                 style: Theme.of(context).textTheme.bodyMedium)
                           ],
                         ),
@@ -58,6 +77,7 @@ class TransactionView extends StatelessWidget {
                               const SizedBox(width: 5),
                               Text(
                                 transaction.description,
+                                overflow: TextOverflow.ellipsis,
                                 style: Theme.of(context).textTheme.bodyMedium,
                               )
                             ],
@@ -67,9 +87,11 @@ class TransactionView extends StatelessWidget {
             Text('${transaction.amount.toStringAsFixed(2)}€',
                 style: TextStyle(
                     fontSize: 15,
-                    color: transaction.amount < 0
-                        ? Colors.redAccent
-                        : Colors.greenAccent))
+                    color: transaction.type == CashTransactionType.transfer
+                        ? Colors.black
+                        : transaction.type == CashTransactionType.income
+                            ? Colors.greenAccent
+                            : Colors.redAccent))
           ],
         ));
   }
