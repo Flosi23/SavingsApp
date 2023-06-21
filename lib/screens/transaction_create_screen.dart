@@ -25,8 +25,8 @@ class _TransactionCreateScreenState extends State<TransactionCreateScreen> {
   late TextEditingController _dateController;
   late DateTime _selectedDate;
   late List<SelectableItem<Wallet>> _walletItems;
-  Wallet? _selectedOriginWallet;
-  Wallet? _selectedDestinationWallet;
+  late Wallet _selectedOriginWallet;
+  late Wallet _selectedDestinationWallet;
 
   late TextEditingController _categoryController;
   CashFlowCategory? _selectedCategory;
@@ -42,6 +42,7 @@ class _TransactionCreateScreenState extends State<TransactionCreateScreen> {
         .map((wallet) => SelectableItem(text: wallet.name, value: wallet))
         .toList();
     _selectedOriginWallet = widget.wallets[0];
+    _selectedDestinationWallet = widget.wallets[0];
     _categoryController = TextEditingController();
     updateSelectedDate(_selectedDate);
   }
@@ -67,15 +68,29 @@ class _TransactionCreateScreenState extends State<TransactionCreateScreen> {
     if (_amountController.text.isNotEmpty && _selectedCategory != null) {
       double amount = double.parse(_amountController.text);
 
+      if (_selectedCategory!.type != CashTransactionType.income) {
+        amount *= -1;
+      }
+
       transactions.add(CashTransaction(
           id: 0,
-          fromWalletId: _selectedOriginWallet?.id,
-          toWalletId: _selectedDestinationWallet?.id,
+          walletId: _selectedOriginWallet.id,
           categoryId: _selectedCategory!.id,
           type: _selectedCategory!.type,
           amount: amount,
           description: _descriptionController.text,
           date: _selectedDate));
+
+      if (_selectedCategory!.type == CashTransactionType.transfer) {
+        transactions.add(CashTransaction(
+            id: 0,
+            walletId: _selectedDestinationWallet.id,
+            categoryId: _selectedCategory!.id,
+            type: _selectedCategory!.type,
+            amount: amount * -1,
+            description: _descriptionController.text,
+            date: _selectedDate));
+      }
     }
 
     Navigator.pop(context, transactions);
@@ -178,28 +193,27 @@ class _TransactionCreateScreenState extends State<TransactionCreateScreen> {
                         border: InputBorder.none),
                   )),
               const Divider(),
-              if (_selectedCategory == null ||
-                  _selectedCategory?.type == CashTransactionType.expense ||
-                  _selectedCategory?.type == CashTransactionType.transfer)
-                InputRow(
-                    icon: const Icon(Icons.wallet),
-                    child: Container(
-                        margin: const EdgeInsets.only(
-                            top: 10, bottom: 10, right: 10),
-                        child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              SelectItem<Wallet>(
-                                  items: _walletItems,
-                                  initialSelection: _walletItems[0],
-                                  onChanged: onOriginWalletChanged),
-                              Text(
-                                "FROM",
-                                style: Theme.of(context).textTheme.labelLarge,
-                              )
-                            ]))),
-              if (_selectedCategory?.type == CashTransactionType.transfer ||
-                  _selectedCategory?.type == CashTransactionType.income)
+              InputRow(
+                  icon: const Icon(Icons.wallet),
+                  child: Container(
+                      margin:
+                          const EdgeInsets.only(top: 10, bottom: 10, right: 10),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            SelectItem<Wallet>(
+                                items: _walletItems,
+                                initialSelection: _walletItems[0],
+                                onChanged: onOriginWalletChanged),
+                            Text(
+                              _selectedCategory?.type ==
+                                      CashTransactionType.transfer
+                                  ? "FROM"
+                                  : "",
+                              style: Theme.of(context).textTheme.labelLarge,
+                            )
+                          ]))),
+              if (_selectedCategory?.type == CashTransactionType.transfer)
                 InputRow(
                     icon: const Icon(Icons.wallet),
                     child: Container(

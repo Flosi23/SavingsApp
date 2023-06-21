@@ -1,10 +1,27 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:savings_app/services/db.dart';
+import 'package:savings_app/widgets/atoms/ScreenContainer.dart';
 
 class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({super.key});
+  SettingsScreen({super.key});
+
+  final DatabaseService _dbService = DatabaseService();
+
+  void _deleteDB() {
+    _dbService.deleteDB();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return const Text("settings screen");
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Settings"),
+      ),
+      body: ScreenContainer(
+          child: FilledButton(
+        onPressed: _deleteDB,
+        child: const Text("Delete Database"),
+      )),
+    );
   }
 }

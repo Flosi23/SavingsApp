@@ -23,18 +23,13 @@ class TransactionView extends StatelessWidget {
 
     if (category == null) return Container();
 
-    Wallet? fromWallet = wallets
-        .where((wallet) => wallet.id == transaction.fromWalletId)
-        .firstOrNull;
-    Wallet? toWallet = wallets
-        .where((wallet) => wallet.id == transaction.toWalletId)
+    Wallet? wallet = wallets
+        .where((wallet) => wallet.id == transaction.walletId)
         .firstOrNull;
 
-    String fromWalletString = fromWallet != null ? fromWallet.name : "";
-    String toWalletString = toWallet != null ? toWallet.name : "";
-    String walletText = transaction.type == CashTransactionType.transfer
-        ? "from $fromWalletString to $toWalletString"
-        : "$fromWalletString$toWalletString";
+    if (wallet == null) {
+      return Container();
+    }
 
     return Container(
         margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
@@ -65,7 +60,7 @@ class TransactionView extends StatelessWidget {
                               size: 20,
                             ),
                             const SizedBox(width: 5),
-                            Text(walletText,
+                            Text(wallet.name,
                                 style: Theme.of(context).textTheme.bodyMedium)
                           ],
                         ),

@@ -61,7 +61,6 @@ class _WalletsScreenState extends State<WalletsScreen> {
         MaterialPageRoute(
             builder: (context) => WalletOverviewScreen(
                   wallet: wallet,
-                  wallets: _wallets,
                   transactions: _transactions,
                   categories: _categories,
                 )));

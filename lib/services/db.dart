@@ -80,9 +80,7 @@ class DatabaseService {
 
     db.transaction((txn) async {
       await txn.rawUpdate(
-          'UPDATE ${Wallet.tableName} SET balance = balance - ${cashTransaction.amount} WHERE id = ${cashTransaction.fromWalletId}');
-      await txn.rawUpdate(
-          'UPDATE ${Wallet.tableName} SET balance = balance + ${cashTransaction.amount} WHERE id = ${cashTransaction.toWalletId}');
+          'UPDATE ${Wallet.tableName} SET balance = balance + ${cashTransaction.amount} WHERE id = ${cashTransaction.walletId}');
       await txn.insert(CashTransaction.tableName, cashTransaction.toMap());
     });
   }

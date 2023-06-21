@@ -24,8 +24,10 @@ class SummaryView extends StatefulWidget {
   State<StatefulWidget> createState() => _SummaryViewState();
 }
 
+enum TransactionFilterType { income, expense }
+
 class _SummaryViewState extends State<SummaryView> {
-  CashTransactionType _selectedTransactionType = CashTransactionType.expense;
+  TransactionFilterType _selectedFilterType = TransactionFilterType.expense;
 
   @override
   void initState() {
@@ -33,9 +35,9 @@ class _SummaryViewState extends State<SummaryView> {
   }
 
   void updateSelectedTransactionType(
-      Set<CashTransactionType> newTransactionType) {
+      Set<TransactionFilterType> newTransactionType) {
     setState(() {
-      _selectedTransactionType = newTransactionType.first;
+      _selectedFilterType = newTransactionType.first;
     });
   }
 
@@ -44,16 +46,14 @@ class _SummaryViewState extends State<SummaryView> {
     final Map<CashFlowCategory, double> categorySums = {};
 
     List<CashTransaction> filteredTransactions = widget.transactions
-        .where((transaction) =>
-            transaction.toWalletId == widget.wallet.id ||
-            transaction.fromWalletId == widget.wallet.id)
+        .where((transaction) => transaction.walletId == widget.wallet.id)
         .toList();
 
     filteredTransactions = filteredTransactions
         .where((transaction) =>
-            _selectedTransactionType == CashTransactionType.income
-                ? transaction.toWalletId == widget.wallet.id
-                : transaction.fromWalletId == widget.wallet.id)
+            _selectedFilterType == TransactionFilterType.income
+                ? transaction.amount > 0
+                : transaction.amount < 0)
         .toList();
 
     if (widget.timeSpan != null) {
@@ -94,20 +94,20 @@ class _SummaryViewState extends State<SummaryView> {
       SegmentedButton(
         segments: const [
           ButtonSegment(
-              value: CashTransactionType.expense, label: Text("Expenses")),
+              value: TransactionFilterType.expense, label: Text("Expenses")),
           ButtonSegment(
-              value: CashTransactionType.income, label: Text("Income")),
+              value: TransactionFilterType.income, label: Text("Income")),
         ],
-        selected: {_selectedTransactionType},
+        selected: {_selectedFilterType},
         onSelectionChanged: updateSelectedTransactionType,
       ),
       const SizedBox(height: 15),
       NumberStatCard(
           number: sum,
-          description: _selectedTransactionType == CashTransactionType.income
+          description: _selectedFilterType == TransactionFilterType.income
               ? "Income"
               : "Expenses",
-          numberColor: _selectedTransactionType == CashTransactionType.income
+          numberColor: _selectedFilterType == TransactionFilterType.income
               ? Colors.greenAccent
               : Colors.redAccent),
       CategoryPieChart(chartData: chartData),

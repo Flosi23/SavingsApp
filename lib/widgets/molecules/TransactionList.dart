@@ -29,9 +29,15 @@ class TransactionList extends StatelessWidget {
           .where((transaction) =>
               (transaction.date.isAtSameMomentAs(timeSpan!.start) ||
                   transaction.date.isAfter(timeSpan!.start)) &&
-              transaction.date.isBefore(timeSpan!.end))
+              transaction.date.isBefore(timeSpan!.end) &&
+              wallets
+                  .where((wallet) => wallet.id == transaction.walletId)
+                  .isNotEmpty)
           .toList();
     }
+
+    transactions.sort(
+        (CashTransaction a, CashTransaction b) => b.date.compareTo(a.date));
 
     Map<String, List<CashTransaction>> selectedTransactions = {};
 

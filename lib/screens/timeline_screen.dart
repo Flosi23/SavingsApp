@@ -35,6 +35,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
   }
 
   void retrieveFromDB() async {
+    await _databaseService.deleteDB();
     List<Wallet> wallets = await _databaseService.retrieveWallets();
     List<CashFlowCategory> categories =
         await _databaseService.retrieveCashFlowCategories();

@@ -54,7 +54,7 @@ class _LayoutState extends State<Layout> {
   final List<Page> _pages = [
     Page("Wallets", Icons.wallet, const WalletsScreen()),
     Page("Timeline", Icons.timeline, const TimelineScreen()),
-    Page("Settings", Icons.settings, const SettingsScreen())
+    Page("Settings", Icons.settings, SettingsScreen())
   ];
 
   void _onDestinationSelected(int index) {
