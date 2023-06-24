@@ -7,8 +7,8 @@ class SettingsScreen extends StatelessWidget {
 
   final DatabaseService _dbService = DatabaseService();
 
-  void _deleteDB() {
-    _dbService.deleteDB();
+  void _deleteDB() async {
+    await _dbService.deleteDB();
   }
 
   @override

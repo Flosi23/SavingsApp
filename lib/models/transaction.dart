@@ -2,6 +2,7 @@ enum CashTransactionType { expense, income, transfer }
 
 class CashTransaction {
   final int id;
+  final String transferId;
   final int walletId;
   final int categoryId;
   final CashTransactionType type;
@@ -13,6 +14,7 @@ class CashTransaction {
 
   const CashTransaction({
     required this.id,
+    required this.transferId,
     required this.walletId,
     required this.categoryId,
     required this.type,
@@ -23,6 +25,7 @@ class CashTransaction {
 
   Map<String, dynamic> toMap() {
     return {
+      'transferId': transferId,
       'walletId': walletId,
       'categoryId': categoryId,
       'type': type.name,
@@ -35,6 +38,7 @@ class CashTransaction {
   static CashTransaction fromMap(Map<String, dynamic> map) {
     return CashTransaction(
         id: map['id'],
+        transferId: map['transferId'],
         walletId: map['walletId'],
         categoryId: map['categoryId'],
         type: CashTransactionType.values
@@ -48,6 +52,7 @@ class CashTransaction {
     return '''
      create table $tableName (
       id integer primary key autoincrement,
+      transferId text not null,
       walletId integer,
       categoryId integer,
       type text not null,

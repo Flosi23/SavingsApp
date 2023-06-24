@@ -28,7 +28,7 @@ class DatabaseService {
 
   Future<void> deleteDB() async {
     String path = await getDatabasesPath();
-    return deleteDatabase(path);
+    return await deleteDatabase(path);
   }
 
   Future<int> insertCashFlowCategory(CashFlowCategory cashFlowCategory) async {
@@ -87,8 +87,12 @@ class DatabaseService {
 
   Future<void> deleteCashTransaction(CashTransaction cashTransaction) async {
     final Database db = await initializeDB();
-    await db.delete(CashTransaction.tableName,
-        where: 'id = ${cashTransaction.id}');
+    db.transaction((txn) async {
+      await txn.rawUpdate(
+          'UPDATE ${Wallet.tableName} SET balance = balance - ${cashTransaction.amount} WHERE id = ${cashTransaction.walletId}');
+      await txn.delete(CashTransaction.tableName,
+          where: 'id = ${cashTransaction.id}');
+    });
   }
 
   Future<List<CashTransaction>> retrieveCashTransactions() async {

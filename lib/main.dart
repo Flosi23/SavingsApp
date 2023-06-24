@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:savings_app/screens/settings_screen.dart';
 import 'package:savings_app/screens/timeline_screen.dart';
 import 'package:savings_app/screens/wallets_screen.dart';
+import 'package:savings_app/widgets/atoms/Provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -66,7 +67,9 @@ class _LayoutState extends State<Layout> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages.elementAt(_selectedIndex).screen,
+      body: AllProvider(
+        child: _pages.elementAt(_selectedIndex).screen,
+      ),
       bottomNavigationBar: NavigationBar(
           selectedIndex: _selectedIndex,
           onDestinationSelected: _onDestinationSelected,

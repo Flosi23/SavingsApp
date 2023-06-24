@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:savings_app/models/category.dart';
-import 'package:savings_app/models/transaction.dart';
+import 'package:provider/provider.dart';
 import 'package:savings_app/models/wallet.dart';
+import 'package:savings_app/providers/CategoryProvider.dart';
+import 'package:savings_app/providers/TransactionProvider.dart';
+import 'package:savings_app/providers/WalletProvider.dart';
 import 'package:savings_app/screens/wallet_create_screen.dart';
 import 'package:savings_app/screens/wallet_overview_screen.dart';
-import 'package:savings_app/services/db.dart';
 import 'package:savings_app/widgets/atoms/ScreenContainer.dart';
 import 'package:savings_app/widgets/atoms/WalletCard.dart';
 
@@ -16,83 +17,54 @@ class WalletsScreen extends StatefulWidget {
 }
 
 class _WalletsScreenState extends State<WalletsScreen> {
-  final DatabaseService _databaseService = DatabaseService();
-  List<Wallet> _wallets = [];
-  List<CashTransaction> _transactions = [];
-  List<CashFlowCategory> _categories = [];
-
   @override
   void initState() {
     super.initState();
-    retrieveFromDB();
-  }
-
-  void retrieveFromDB() async {
-    List<CashFlowCategory> categories =
-        await _databaseService.retrieveCashFlowCategories();
-    List<CashTransaction> transactions =
-        await _databaseService.retrieveCashTransactions();
-
-    setState(() {
-      _categories = categories;
-      _transactions = transactions;
-    });
-    retrieveWallets();
-  }
-
-  void retrieveWallets() async {
-    List<Wallet> wallets = await _databaseService.retrieveWallets();
-    setState(() {
-      _wallets = wallets;
-    });
-  }
-
-  void showCreateWalletScreen() async {
-    Wallet result = await Navigator.push(context,
-        MaterialPageRoute(builder: (context) => const WalletCreateScreen()));
-
-    await _databaseService.insertWallet(result);
-    retrieveWallets();
-  }
-
-  void onWalletCardTap(Wallet wallet) async {
-    WalletOverviewScreenResult result = await Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => WalletOverviewScreen(
-                  wallet: wallet,
-                  transactions: _transactions,
-                  categories: _categories,
-                )));
-
-    switch (result.action) {
-      case WalletOverviewScreenAction.delete:
-        {
-          await _databaseService.deleteWallet(result.wallet);
-        }
-        break;
-
-      case WalletOverviewScreenAction.edit:
-        {
-          await _databaseService.updateWallet(result.wallet);
-        }
-    }
-
-    retrieveWallets();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(centerTitle: false, title: const Text("Wallets")),
-      body: ScreenContainer(
-          child: ListView(
-              children: _wallets
-                  .map((wallet) =>
-                      WalletCard(wallet: wallet, onTap: onWalletCardTap))
-                  .toList())),
-      floatingActionButton: FloatingActionButton(
-          onPressed: showCreateWalletScreen, child: const Icon(Icons.add)),
-    );
+    return Consumer3<WalletProvider, TransactionProvider, CategoryProvider>(
+        builder: (context, walletProvider, transactionProvider,
+            categoryProvider, child) {
+      void showCreateWalletScreen() async {
+        Wallet newWallet = await Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const WalletCreateScreen()));
+
+        walletProvider.add(newWallet);
+      }
+
+      void onWalletCardTap(Wallet wallet) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => MultiProvider(
+                        providers: [
+                          ChangeNotifierProvider<WalletProvider>.value(
+                              value: walletProvider),
+                          ChangeNotifierProvider<TransactionProvider>.value(
+                              value: transactionProvider),
+                          ChangeNotifierProvider<CategoryProvider>.value(
+                              value: categoryProvider),
+                        ],
+                        child: WalletOverviewScreen(
+                          walletId: wallet.id,
+                        ))));
+      }
+
+      return Scaffold(
+        appBar: AppBar(centerTitle: false, title: const Text("Wallets")),
+        body: ScreenContainer(
+            child: ListView(
+                children: walletProvider.wallets
+                    .map((wallet) =>
+                        WalletCard(wallet: wallet, onTap: onWalletCardTap))
+                    .toList())),
+        floatingActionButton: FloatingActionButton(
+            onPressed: showCreateWalletScreen, child: const Icon(Icons.add)),
+      );
+    });
   }
 }

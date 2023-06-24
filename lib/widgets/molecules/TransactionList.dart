@@ -1,83 +1,120 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:savings_app/models/category.dart';
+import 'package:provider/provider.dart';
 import 'package:savings_app/models/transaction.dart';
 import 'package:savings_app/models/wallet.dart';
+import 'package:savings_app/providers/CategoryProvider.dart';
+import 'package:savings_app/providers/TransactionProvider.dart';
+import 'package:savings_app/providers/WalletProvider.dart';
 import 'package:savings_app/widgets/atoms/TransactionDivider.dart';
 import 'package:savings_app/widgets/atoms/TransactionView.dart';
 import 'package:savings_app/widgets/molecules/TimeSpanSelector.dart';
 
 class TransactionList extends StatelessWidget {
-  const TransactionList(
-      {super.key,
-      required this.categories,
-      required this.wallets,
-      required this.transactions,
-      this.timeSpan});
+  const TransactionList({super.key, required this.wallets, this.timeSpan});
 
-  final List<CashFlowCategory> categories;
   final List<Wallet> wallets;
-  final List<CashTransaction> transactions;
   final TimeSpan? timeSpan;
 
   @override
   Widget build(BuildContext context) {
-    List<CashTransaction> filteredTransactions = transactions;
+    return Consumer2<TransactionProvider, CategoryProvider>(
+        builder: (context, transactionProvider, categoryProvider, child) {
+      Future<bool> confirmDismiss(DismissDirection dismissDirection) async {
+        return await showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+                  title: const Text("Delete transaction?"),
+                  content: const Text(
+                      "This action cannot be undone. If in doubt press the cancel button to go back"),
+                  actions: [
+                    TextButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        child: const Text("Cancel")),
+                    TextButton(
+                        onPressed: () => Navigator.pop(context, true),
+                        child: const Text("Delete"))
+                  ],
+                ));
+      }
 
-    if (timeSpan != null) {
-      filteredTransactions = transactions
-          .where((transaction) =>
-              (transaction.date.isAtSameMomentAs(timeSpan!.start) ||
-                  transaction.date.isAfter(timeSpan!.start)) &&
-              transaction.date.isBefore(timeSpan!.end) &&
-              wallets
-                  .where((wallet) => wallet.id == transaction.walletId)
-                  .isNotEmpty)
-          .toList();
-    }
+      deleteTransaction(CashTransaction transaction) {
+        return (DismissDirection dismissDirection) async {
+          transactionProvider.delete(
+              transaction, Provider.of<WalletProvider>(context, listen: false));
+        };
+      }
 
-    filteredTransactions.sort(
-        (CashTransaction a, CashTransaction b) => b.date.compareTo(a.date));
+      List<CashTransaction> filteredTransactions =
+          transactionProvider.transactions;
 
-    Map<String, List<CashTransaction>> selectedTransactions = {};
+      if (timeSpan != null) {
+        filteredTransactions = filteredTransactions
+            .where((transaction) =>
+                (transaction.date.isAtSameMomentAs(timeSpan!.start) ||
+                    transaction.date.isAfter(timeSpan!.start)) &&
+                transaction.date.isBefore(timeSpan!.end) &&
+                wallets
+                    .where((wallet) => wallet.id == transaction.walletId)
+                    .isNotEmpty)
+            .toList();
+      }
 
-    for (var transaction in filteredTransactions) {
-      DateFormat dateFormat = DateFormat("MMMM dd");
-      String dateString = dateFormat.format(transaction.date);
+      filteredTransactions.sort(
+          (CashTransaction a, CashTransaction b) => b.date.compareTo(a.date));
 
-      selectedTransactions.update(dateString, (list) {
-        list.add(transaction);
-        return list;
-      }, ifAbsent: () => [transaction]);
-    }
+      Map<String, List<CashTransaction>> selectedTransactions = {};
 
-    if (wallets.isEmpty || categories.isEmpty) {
-      return Container();
-    }
+      for (var transaction in filteredTransactions) {
+        DateFormat dateFormat = DateFormat("MMMM dd");
+        String dateString = dateFormat.format(transaction.date);
 
-    return ListView(
-        children: selectedTransactions.entries
-            .map((entry) {
-              double sum = entry.value.fold(
-                  0,
-                  (previousValue, transaction) =>
-                      transaction.type != CashTransactionType.transfer
-                          ? previousValue + transaction.amount
-                          : previousValue);
+        selectedTransactions.update(dateString, (list) {
+          list.add(transaction);
+          return list;
+        }, ifAbsent: () => [transaction]);
+      }
 
-              TransactionDivider transactionDivider =
-                  TransactionDivider(dateString: entry.key, sum: sum);
+      if (wallets.isEmpty || categoryProvider.categories.isEmpty) {
+        return Container();
+      }
 
-              List<Widget> transactions = entry.value.map((transaction) {
-                return TransactionView(
-                    transaction: transaction,
-                    wallets: wallets,
-                    categories: categories);
-              }).toList();
+      return ListView(
+          children: selectedTransactions.entries
+              .map((entry) {
+                double sum = entry.value.fold(
+                    0,
+                    (previousValue, transaction) =>
+                        transaction.type != CashTransactionType.transfer
+                            ? previousValue + transaction.amount
+                            : previousValue);
 
-              return [transactionDivider, ...transactions];
-            })
-            .expand((e) => e)
-            .toList());
+                TransactionDivider transactionDivider =
+                    TransactionDivider(dateString: entry.key, sum: sum);
+
+                List<Widget> transactions = entry.value.map((transaction) {
+                  return Dismissible(
+                      confirmDismiss: confirmDismiss,
+                      onDismissed: deleteTransaction(transaction),
+                      key: Key(transaction.id.toString()),
+                      background: Container(
+                        alignment: AlignmentDirectional.centerStart,
+                        color: const Color(0xffFFDDAA),
+                        child: const SizedBox(
+                            width: 90,
+                            child: Center(child: Icon(Icons.delete_forever))),
+                      ),
+                      direction: DismissDirection.startToEnd,
+                      child: TransactionView(
+                          transaction: transaction,
+                          wallets: wallets,
+                          categories: categoryProvider.categories));
+                }).toList();
+
+                return [transactionDivider, ...transactions];
+              })
+              .expand((e) => e)
+              .toList());
+    });
   }
 }
