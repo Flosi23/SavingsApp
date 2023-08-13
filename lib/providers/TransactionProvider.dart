@@ -30,8 +30,9 @@ class TransactionProvider extends ChangeNotifier {
 
   void delete(
       CashTransaction transaction, WalletProvider walletProvider) async {
-    List<CashTransaction> transactions =
-        _transactions.where((t) => t.transferId == t.transferId).toList();
+    List<CashTransaction> transactions = _transactions
+        .where((t) => t.transferId == transaction.transferId)
+        .toList();
 
     for (CashTransaction transaction in transactions) {
       await _db.deleteCashTransaction(transaction);
