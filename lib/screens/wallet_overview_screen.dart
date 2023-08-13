@@ -3,10 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:savings_app/models/wallet.dart';
 import 'package:savings_app/providers/TransactionProvider.dart';
 import 'package:savings_app/providers/WalletProvider.dart';
-import 'package:savings_app/widgets/atoms/NumberStatCard.dart';
+import 'package:savings_app/widgets/molecules/BarChartTimeSpanSelector.dart';
 import 'package:savings_app/widgets/molecules/SummaryView.dart';
 import 'package:savings_app/widgets/molecules/TimeSpanSelector.dart';
-import 'package:savings_app/widgets/molecules/TransactionList.dart';
 
 class WalletOverviewScreen extends StatefulWidget {
   const WalletOverviewScreen({super.key, required this.walletId});
@@ -114,10 +113,13 @@ class _WalletOverviewScreenState extends State<WalletOverviewScreen>
         }
       }
 
+      Color? backgroundColor = Theme.of(context).cardColor;
+
       return DefaultTabController(
           length: 2,
           child: Scaffold(
               appBar: AppBar(
+                backgroundColor: backgroundColor,
                 centerTitle: true,
                 title: Text(wallet.name),
                 actions: [
@@ -130,33 +132,17 @@ class _WalletOverviewScreenState extends State<WalletOverviewScreen>
                 ],
               ),
               body: SizedBox.expand(
-                  child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
+                  child: ListView(
                 children: [
-                  NumberStatCard(
-                    number: wallet.balance,
-                    description: "Wallet Balance",
-                    numberColor: null,
-                  ),
-                  const SizedBox(height: 20),
-                  TimeSpanSelector(
+                  BarChartTimeSpanSelector(
+                      wallets: [wallet],
+                      backgroundColor: backgroundColor,
                       defaultTimeSpan: _defaultTimeSpan,
                       onChanged: updateSelectedTimeSpan),
-                  TabBar.secondary(controller: _tabController, tabs: const [
-                    Tab(text: "Summary"),
-                    Tab(text: "Transactions")
-                  ]),
-                  Expanded(
-                      child: TabBarView(controller: _tabController, children: [
-                    SummaryView(
-                      wallet: wallet,
-                      timeSpan: _selectedTimeSpan,
-                    ),
-                    TransactionList(
-                      wallets: [wallet],
-                      timeSpan: _selectedTimeSpan,
-                    ),
-                  ]))
+                  SummaryView(
+                    wallet: wallet,
+                    timeSpan: _selectedTimeSpan,
+                  ),
                 ],
               ))));
     });

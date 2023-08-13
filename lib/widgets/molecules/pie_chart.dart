@@ -47,7 +47,7 @@ class PieChartSample3State extends State<CategoryPieChart> {
             borderData: FlBorderData(
               show: false,
             ),
-            sectionsSpace: 0,
+            sectionsSpace: 5,
             centerSpaceRadius: 70,
             sections: showingSections(),
           ),
@@ -62,7 +62,7 @@ class PieChartSample3State extends State<CategoryPieChart> {
       SectionData sectionData = entry.value;
 
       final isTouched = index == touchedIndex;
-      final radius = isTouched ? 70.0 : 60.0;
+      final radius = isTouched ? 50.0 : 40.0;
       final widgetSize = isTouched ? 55.0 : 40.0;
 
       return PieChartSectionData(

@@ -6,6 +6,7 @@ import 'package:savings_app/providers/TransactionProvider.dart';
 import 'package:savings_app/providers/WalletProvider.dart';
 import 'package:savings_app/screens/transaction_create_screen.dart';
 import 'package:savings_app/widgets/atoms/ScreenContainer.dart';
+import 'package:savings_app/widgets/molecules/BarChartTimeSpanSelector.dart';
 import 'package:savings_app/widgets/molecules/TimeSpanSelector.dart';
 import 'package:savings_app/widgets/molecules/TransactionList.dart';
 
@@ -76,10 +77,11 @@ class _TimelineScreenState extends State<TimelineScreen> {
           body: SizedBox.expand(
               child: Column(
             children: [
-              const SizedBox(height: 20),
-              TimeSpanSelector(
-                  defaultTimeSpan: _defaultTimeSpan,
-                  onChanged: updateSelectedTimeSpan),
+              BarChartTimeSpanSelector(
+                  wallets: walletProvider.wallets,
+                  onChanged: updateSelectedTimeSpan,
+                  defaultTimeSpan: _defaultTimeSpan),
+              const SizedBox(height: 10),
               Expanded(
                   child: TransactionList(
                 wallets: walletProvider.wallets,
