@@ -107,7 +107,7 @@ class _SummaryViewState extends State<SummaryView> {
             numberColor: _selectedFilterType == TransactionFilterType.income
                 ? Colors.greenAccent
                 : Colors.redAccent),
-        CategoryPieChart(chartData: chartData),
+        if (chartData.isNotEmpty) CategoryPieChart(chartData: chartData),
         ...categorySums.entries.map((entry) {
           int numberOfTransactions = filteredTransactions.fold(
               0,

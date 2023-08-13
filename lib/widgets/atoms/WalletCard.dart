@@ -11,31 +11,41 @@ class WalletCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final borderRadius = BorderRadius.circular(10);
+    final borderRadius = BorderRadius.circular(20);
 
     return Card(
+        clipBehavior: Clip.antiAliasWithSaveLayer,
         elevation: 1,
         shadowColor: Colors.transparent,
         shape: RoundedRectangleBorder(borderRadius: borderRadius),
         child: InkWell(
             onTap: () => {onTap(wallet)},
             borderRadius: borderRadius,
-            child: Container(
-              padding: const EdgeInsets.all(25),
-              child: Row(
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-                    const Icon(Icons.wallet, size: 25),
-                    const SizedBox(width: 10),
-                    Text(wallet.name, style: const TextStyle(fontSize: 20)),
-                    const SizedBox(width: 10),
-                    Text('${wallet.balance.toStringAsFixed(2)}€',
-                        style: const TextStyle(fontSize: 18))
-                  ]),
-                  const Spacer(),
-                  const Icon(Icons.chevron_right, size: 20)
-                ],
-              ),
-            )));
+                  Container(
+                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(wallet.name,
+                                style: Theme.of(context).textTheme.titleLarge),
+                            const SizedBox(height: 10),
+                            Text('${wallet.balance.toStringAsFixed(2)}€',
+                                style:
+                                    Theme.of(context).textTheme.headlineLarge)
+                          ])),
+                  Expanded(
+                      child: Container(
+                          height: 150,
+                          decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  image: AssetImage(
+                                      'assets/images/bg${(wallet.id % 5) + 1}.png'),
+                                  alignment: Alignment.centerLeft,
+                                  fit: BoxFit.cover)),
+                          child: null))
+                ])));
   }
 }

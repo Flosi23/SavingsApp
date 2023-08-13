@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
@@ -8,7 +6,8 @@ class SectionData {
   Color color;
   IconData iconData;
 
-  SectionData({required this.value, required this.color, required this.iconData});
+  SectionData(
+      {required this.value, required this.color, required this.iconData});
 }
 
 class CategoryPieChart extends StatefulWidget {
@@ -25,7 +24,6 @@ class PieChartSample3State extends State<CategoryPieChart> {
 
   @override
   Widget build(BuildContext context) {
-
     return AspectRatio(
       aspectRatio: 1.3,
       child: AspectRatio(
@@ -60,27 +58,26 @@ class PieChartSample3State extends State<CategoryPieChart> {
 
   List<PieChartSectionData> showingSections() {
     return widget.chartData.asMap().entries.map((entry) {
-        int index = entry.key;
-        SectionData sectionData = entry.value;
+      int index = entry.key;
+      SectionData sectionData = entry.value;
 
-        final isTouched = index == touchedIndex;
-        final radius = isTouched ? 70.0 : 60.0;
-        final widgetSize = isTouched ? 55.0 : 40.0;
+      final isTouched = index == touchedIndex;
+      final radius = isTouched ? 70.0 : 60.0;
+      final widgetSize = isTouched ? 55.0 : 40.0;
 
-        return PieChartSectionData(
-          color: sectionData.color,
-          title: '',
-          value: sectionData.value,
-          radius: radius,
-          badgeWidget: _Badge(
-            iconData: sectionData.iconData,
-            borderColor: sectionData.color,
-            size: widgetSize,
-          ),
-          badgePositionPercentageOffset: .98,
-        );
-      }
-    ).toList();
+      return PieChartSectionData(
+        color: sectionData.color,
+        title: '',
+        value: sectionData.value,
+        radius: radius,
+        badgeWidget: _Badge(
+          iconData: sectionData.iconData,
+          borderColor: sectionData.color,
+          size: widgetSize,
+        ),
+        badgePositionPercentageOffset: .98,
+      );
+    }).toList();
   }
 }
 
@@ -118,8 +115,8 @@ class _Badge extends StatelessWidget {
       ),
       padding: EdgeInsets.all(size * .15),
       child: Center(
-        child: Icon(iconData, color: Theme.of(context).colorScheme.onSurface)
-      ),
+          child:
+              Icon(iconData, color: Theme.of(context).colorScheme.onSurface)),
     );
   }
 }
