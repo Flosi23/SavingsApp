@@ -79,10 +79,9 @@ class _BarChartTimespanSelectorState extends State<BarChartTimeSpanSelector> {
       double borderWidth = 0;
 
       return Container(
-          height: 180,
-          color: widget.backgroundColor,
+          height: 150,
           child: ListView.separated(
-              padding: const EdgeInsets.symmetric(horizontal: 5),
+              padding: const EdgeInsets.symmetric(horizontal: 10),
               scrollDirection: Axis.horizontal,
               reverse: true,
               separatorBuilder: (BuildContext context, int index) => Container(
@@ -112,14 +111,15 @@ class _BarChartTimespanSelectorState extends State<BarChartTimeSpanSelector> {
                 bool selected =
                     key.toLowerCase() == currentTimeSpanKey.toLowerCase();
 
-                return SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.25,
-                    child: Card(
-                        shadowColor: Colors.transparent,
-                        surfaceTintColor: selected ? null : Colors.transparent,
-                        child: InkWell(
-                            onTap: () => onPageChanged(index),
-                            borderRadius: BorderRadius.circular(12),
+                return GestureDetector(
+                    onTap: () => onPageChanged(index),
+                    child: SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.25,
+                        child: Card(
+                            shadowColor: Colors.transparent,
+                            surfaceTintColor:
+                                selected ? null : Colors.transparent,
+                            color: selected ? null : Colors.transparent,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [

@@ -83,7 +83,7 @@ class TransactionView extends StatelessWidget {
                 style: TextStyle(
                     fontSize: 15,
                     color: transaction.type == CashTransactionType.transfer
-                        ? Colors.black
+                        ? Theme.of(context).colorScheme.onBackground
                         : transaction.type == CashTransactionType.income
                             ? Colors.greenAccent
                             : Colors.redAccent))

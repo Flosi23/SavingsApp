@@ -13,14 +13,13 @@ class WalletCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final borderRadius = BorderRadius.circular(20);
 
-    return Card(
-        clipBehavior: Clip.antiAliasWithSaveLayer,
-        elevation: 1,
-        shadowColor: Colors.transparent,
-        shape: RoundedRectangleBorder(borderRadius: borderRadius),
-        child: InkWell(
-            onTap: () => {onTap(wallet)},
-            borderRadius: borderRadius,
+    return GestureDetector(
+        onTap: () => {onTap(wallet)},
+        child: Card(
+            clipBehavior: Clip.antiAliasWithSaveLayer,
+            elevation: 1,
+            shadowColor: Colors.transparent,
+            shape: RoundedRectangleBorder(borderRadius: borderRadius),
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

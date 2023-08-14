@@ -15,6 +15,14 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    // image caching
+    precacheImage(const AssetImage("./assets/images/bg1.png"), context);
+    precacheImage(const AssetImage("./assets/images/bg2.png"), context);
+    precacheImage(const AssetImage("./assets/images/bg3.png"), context);
+    precacheImage(const AssetImage("./assets/images/bg4.png"), context);
+    precacheImage(const AssetImage("./assets/images/bg5.png"), context);
+    precacheImage(const AssetImage("./assets/images/notfound.png"), context);
+
     return DynamicColorBuilder(builder: (lightColorScheme, darkColorScheme) {
       return MaterialApp(
         title: 'Flutter Demo',

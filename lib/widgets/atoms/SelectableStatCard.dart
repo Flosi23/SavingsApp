@@ -20,20 +20,19 @@ class SelectableStatCard extends StatelessWidget {
   Widget build(BuildContext context) {
     BorderRadius borderRadius = BorderRadius.circular(20);
 
-    return Card(
-        elevation: 1,
-        shape: selected
-            ? RoundedRectangleBorder(
-                side: BorderSide(
-                    color: Theme.of(context).colorScheme.onBackground,
-                    width: 2),
-                borderRadius: borderRadius)
-            : null,
-        shadowColor: Colors.transparent,
-        surfaceTintColor: selected ? Colors.transparent : null,
-        child: InkWell(
-            borderRadius: borderRadius,
-            onTap: onClicked,
+    return GestureDetector(
+        onTap: onClicked,
+        child: Card(
+            elevation: 1,
+            shape: selected
+                ? RoundedRectangleBorder(
+                    side: BorderSide(
+                        color: Theme.of(context).colorScheme.onBackground,
+                        width: 2),
+                    borderRadius: borderRadius)
+                : null,
+            shadowColor: Colors.transparent,
+            surfaceTintColor: selected ? Colors.transparent : null,
             child: Container(
               padding: const EdgeInsets.all(15),
               child: Row(children: [

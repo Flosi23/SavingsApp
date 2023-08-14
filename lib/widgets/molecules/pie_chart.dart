@@ -20,8 +20,6 @@ class CategoryPieChart extends StatefulWidget {
 }
 
 class PieChartSample3State extends State<CategoryPieChart> {
-  int touchedIndex = 0;
-
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
@@ -30,20 +28,6 @@ class PieChartSample3State extends State<CategoryPieChart> {
         aspectRatio: 1,
         child: PieChart(
           PieChartData(
-            pieTouchData: PieTouchData(
-              touchCallback: (FlTouchEvent event, pieTouchResponse) {
-                setState(() {
-                  if (!event.isInterestedForInteractions ||
-                      pieTouchResponse == null ||
-                      pieTouchResponse.touchedSection == null) {
-                    touchedIndex = -1;
-                    return;
-                  }
-                  touchedIndex =
-                      pieTouchResponse.touchedSection!.touchedSectionIndex;
-                });
-              },
-            ),
             borderData: FlBorderData(
               show: false,
             ),
@@ -51,6 +35,7 @@ class PieChartSample3State extends State<CategoryPieChart> {
             centerSpaceRadius: 70,
             sections: showingSections(),
           ),
+          swapAnimationDuration: Duration.zero,
         ),
       ),
     );
@@ -58,12 +43,10 @@ class PieChartSample3State extends State<CategoryPieChart> {
 
   List<PieChartSectionData> showingSections() {
     return widget.chartData.asMap().entries.map((entry) {
-      int index = entry.key;
       SectionData sectionData = entry.value;
 
-      final isTouched = index == touchedIndex;
-      final radius = isTouched ? 50.0 : 40.0;
-      final widgetSize = isTouched ? 55.0 : 40.0;
+      const radius = 50.0;
+      const widgetSize = 40.0;
 
       return PieChartSectionData(
         color: sectionData.color,

@@ -72,6 +72,7 @@ flutter:
     - ./assets/images/bg3.png
     - ./assets/images/bg4.png
     - ./assets/images/bg5.png
+    - ./assets/images/notfound.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

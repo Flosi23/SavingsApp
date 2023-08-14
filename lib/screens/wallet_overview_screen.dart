@@ -113,13 +113,14 @@ class _WalletOverviewScreenState extends State<WalletOverviewScreen>
         }
       }
 
-      Color? backgroundColor = Theme.of(context).cardColor;
+      Color? backgroundColor = Theme.of(context).colorScheme.secondaryContainer;
 
       return DefaultTabController(
           length: 2,
           child: Scaffold(
               appBar: AppBar(
                 backgroundColor: backgroundColor,
+                surfaceTintColor: backgroundColor,
                 centerTitle: true,
                 title: Text(wallet.name),
                 actions: [
@@ -132,17 +133,26 @@ class _WalletOverviewScreenState extends State<WalletOverviewScreen>
                 ],
               ),
               body: SizedBox.expand(
-                  child: ListView(
+                  child: Column(
                 children: [
-                  BarChartTimeSpanSelector(
-                      wallets: [wallet],
-                      backgroundColor: backgroundColor,
-                      defaultTimeSpan: _defaultTimeSpan,
-                      onChanged: updateSelectedTimeSpan),
-                  SummaryView(
+                  Container(
+                    padding: const EdgeInsets.only(bottom: 15),
+                    decoration: BoxDecoration(
+                        color: backgroundColor,
+                        borderRadius: const BorderRadius.only(
+                            bottomRight: Radius.circular(25),
+                            bottomLeft: Radius.circular(25))),
+                    child: BarChartTimeSpanSelector(
+                        wallets: [wallet],
+                        backgroundColor: backgroundColor,
+                        defaultTimeSpan: _defaultTimeSpan,
+                        onChanged: updateSelectedTimeSpan),
+                  ),
+                  Expanded(
+                      child: SummaryView(
                     wallet: wallet,
                     timeSpan: _selectedTimeSpan,
-                  ),
+                  )),
                 ],
               ))));
     });

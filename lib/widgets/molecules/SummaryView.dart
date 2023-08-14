@@ -6,6 +6,7 @@ import 'package:savings_app/models/wallet.dart';
 import 'package:savings_app/providers/CategoryProvider.dart';
 import 'package:savings_app/providers/TransactionProvider.dart';
 import 'package:savings_app/widgets/atoms/CashFlowCategoryIcon.dart';
+import 'package:savings_app/widgets/atoms/NoTransactionsFound.dart';
 import 'package:savings_app/widgets/atoms/SelectableStatCard.dart';
 import 'package:savings_app/widgets/molecules/TimeSpanSelector.dart';
 import 'package:savings_app/widgets/molecules/pie_chart.dart';
@@ -117,7 +118,9 @@ class _SummaryViewState extends State<SummaryView> {
               ],
             ),
             const SizedBox(height: 20),
-            if (chartData.isNotEmpty) CategoryPieChart(chartData: chartData),
+            chartData.isNotEmpty
+                ? CategoryPieChart(chartData: chartData)
+                : const NoTransactionsFound(),
             const SizedBox(height: 20),
             ...categorySums.entries.map((entry) {
               int numberOfTransactions = filteredTransactions.fold(
