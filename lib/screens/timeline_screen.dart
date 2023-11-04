@@ -75,20 +75,20 @@ class _TimelineScreenState extends State<TimelineScreen> {
       return Scaffold(
           appBar: appBar,
           body: SizedBox.expand(
-              child: Column(
+              child: SingleChildScrollView(
+                  child: Column(
             children: [
               BarChartTimeSpanSelector(
                   wallets: walletProvider.wallets,
                   onChanged: updateSelectedTimeSpan,
                   defaultTimeSpan: _defaultTimeSpan),
-              const SizedBox(height: 10),
-              Expanded(
-                  child: TransactionList(
+              const Divider(),
+              TransactionList(
                 wallets: walletProvider.wallets,
                 timeSpan: _selectedTimeSpan,
-              ))
+              ),
             ],
-          )),
+          ))),
           floatingActionButton: FloatingActionButton(
             onPressed: showAddTransactionScreen,
             child: const Icon(Icons.add),

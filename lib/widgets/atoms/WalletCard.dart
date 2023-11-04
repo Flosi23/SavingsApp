@@ -4,10 +4,15 @@ import 'package:savings_app/models/wallet.dart';
 typedef OnTap = void Function(Wallet wallet);
 
 class WalletCard extends StatelessWidget {
-  const WalletCard({super.key, required this.wallet, required this.onTap});
+  const WalletCard(
+      {super.key,
+      required this.wallet,
+      required this.onTap,
+      required this.images});
 
   final OnTap onTap;
   final Wallet wallet;
+  final List<Image> images;
 
   @override
   Widget build(BuildContext context) {
@@ -40,8 +45,7 @@ class WalletCard extends StatelessWidget {
                           height: 150,
                           decoration: BoxDecoration(
                               image: DecorationImage(
-                                  image: AssetImage(
-                                      'assets/images/bg${(wallet.id % 5) + 1}.png'),
+                                  image: images[wallet.id % 5].image,
                                   alignment: Alignment.centerLeft,
                                   fit: BoxFit.cover)),
                           child: null))

@@ -10,18 +10,15 @@ import 'package:savings_app/widgets/atoms/ScreenContainer.dart';
 import 'package:savings_app/widgets/atoms/WalletCard.dart';
 
 class WalletsScreen extends StatefulWidget {
-  const WalletsScreen({super.key});
+  const WalletsScreen({super.key, required this.walletBackgroundImages});
+
+  final List<Image> walletBackgroundImages;
 
   @override
   State<WalletsScreen> createState() => _WalletsScreenState();
 }
 
 class _WalletsScreenState extends State<WalletsScreen> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Consumer3<WalletProvider, TransactionProvider, CategoryProvider>(
@@ -59,8 +56,11 @@ class _WalletsScreenState extends State<WalletsScreen> {
         body: ScreenContainer(
             child: ListView(
                 children: walletProvider.wallets
-                    .map((wallet) =>
-                        WalletCard(wallet: wallet, onTap: onWalletCardTap))
+                    .map((wallet) => WalletCard(
+                          wallet: wallet,
+                          onTap: onWalletCardTap,
+                          images: widget.walletBackgroundImages,
+                        ))
                     .toList())),
         floatingActionButton: FloatingActionButton(
             onPressed: showCreateWalletScreen, child: const Icon(Icons.add)),

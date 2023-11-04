@@ -15,14 +15,6 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    // image caching
-    precacheImage(const AssetImage("./assets/images/bg1.png"), context);
-    precacheImage(const AssetImage("./assets/images/bg2.png"), context);
-    precacheImage(const AssetImage("./assets/images/bg3.png"), context);
-    precacheImage(const AssetImage("./assets/images/bg4.png"), context);
-    precacheImage(const AssetImage("./assets/images/bg5.png"), context);
-    precacheImage(const AssetImage("./assets/images/notfound.png"), context);
-
     return DynamicColorBuilder(builder: (lightColorScheme, darkColorScheme) {
       return MaterialApp(
         title: 'Flutter Demo',
@@ -60,11 +52,43 @@ class Layout extends StatefulWidget {
 class _LayoutState extends State<Layout> {
   int _selectedIndex = 1;
 
-  final List<Page> _pages = [
-    Page("Wallets", Icons.wallet, const WalletsScreen()),
-    Page("Timeline", Icons.timeline, const TimelineScreen()),
-    Page("Settings", Icons.settings, SettingsScreen())
-  ];
+  late Image _bg1;
+  late Image _bg2;
+  late Image _bg3;
+  late Image _bg4;
+  late Image _bg5;
+  late WalletsScreen walletsScreen;
+  late List<Page> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+    _bg1 = Image.asset("assets/images/bg1.png");
+    _bg2 = Image.asset("assets/images/bg2.png");
+    _bg3 = Image.asset("assets/images/bg3.png");
+    _bg4 = Image.asset("assets/images/bg4.png");
+    _bg5 = Image.asset("assets/images/bg5.png");
+    _pages = [
+      Page(
+          "Wallets",
+          Icons.wallet,
+          WalletsScreen(
+            walletBackgroundImages: [_bg1, _bg2, _bg3, _bg4, _bg5],
+          )),
+      Page("Timeline", Icons.timeline, const TimelineScreen()),
+      Page("Settings", Icons.settings, SettingsScreen())
+    ];
+  }
+
+  @override
+  void didChangeDependencies() {
+    precacheImage(_bg1.image, context);
+    precacheImage(_bg2.image, context);
+    precacheImage(_bg3.image, context);
+    precacheImage(_bg4.image, context);
+    precacheImage(_bg5.image, context);
+    super.didChangeDependencies();
+  }
 
   void _onDestinationSelected(int index) {
     setState(() {

@@ -79,7 +79,7 @@ class TransactionList extends StatelessWidget {
         return Container();
       }
 
-      return ListView(
+      return Column(
           children: selectedTransactions.entries
               .map((entry) {
                 double sum = entry.value.fold(
@@ -99,7 +99,10 @@ class TransactionList extends StatelessWidget {
                       key: Key(transaction.id.toString()),
                       background: Container(
                         alignment: AlignmentDirectional.centerStart,
-                        color: const Color(0xffFFDDAA),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: const Color(0xffFFDDAA),
+                        ),
                         child: const SizedBox(
                             width: 90,
                             child: Center(child: Icon(Icons.delete_forever))),

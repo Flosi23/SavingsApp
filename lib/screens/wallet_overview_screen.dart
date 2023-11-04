@@ -113,48 +113,44 @@ class _WalletOverviewScreenState extends State<WalletOverviewScreen>
         }
       }
 
-      Color? backgroundColor = Theme.of(context).colorScheme.secondaryContainer;
+      Color? backgroundColor = Colors.transparent;
 
-      return DefaultTabController(
-          length: 2,
-          child: Scaffold(
-              appBar: AppBar(
-                backgroundColor: backgroundColor,
-                surfaceTintColor: backgroundColor,
-                centerTitle: true,
-                title: Text(wallet.name),
-                actions: [
-                  IconButton(
-                      onPressed: showEditWalletDialog,
-                      icon: const Icon(Icons.edit_outlined)),
-                  IconButton(
-                      onPressed: showDeleteWalletDialog,
-                      icon: const Icon(Icons.delete_outline))
-                ],
-              ),
-              body: SizedBox.expand(
+      return Scaffold(
+          appBar: AppBar(
+            backgroundColor: backgroundColor,
+            // surfaceTintColor: backgroundColor,
+            centerTitle: true,
+            title: Text(wallet.name),
+            actions: [
+              IconButton(
+                  onPressed: showEditWalletDialog,
+                  icon: const Icon(Icons.edit_outlined)),
+              IconButton(
+                  onPressed: showDeleteWalletDialog,
+                  icon: const Icon(Icons.delete_outline))
+            ],
+          ),
+          body: SizedBox.expand(
+              child: SingleChildScrollView(
                   child: Column(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.only(bottom: 15),
-                    decoration: BoxDecoration(
-                        color: backgroundColor,
-                        borderRadius: const BorderRadius.only(
-                            bottomRight: Radius.circular(25),
-                            bottomLeft: Radius.circular(25))),
-                    child: BarChartTimeSpanSelector(
-                        wallets: [wallet],
-                        backgroundColor: backgroundColor,
-                        defaultTimeSpan: _defaultTimeSpan,
-                        onChanged: updateSelectedTimeSpan),
-                  ),
-                  Expanded(
-                      child: SummaryView(
-                    wallet: wallet,
-                    timeSpan: _selectedTimeSpan,
-                  )),
-                ],
-              ))));
+            children: [
+              Container(
+                padding: const EdgeInsets.only(bottom: 15),
+                decoration: BoxDecoration(
+                    color: backgroundColor,
+                    borderRadius: const BorderRadius.only(
+                        bottomRight: Radius.circular(25),
+                        bottomLeft: Radius.circular(25))),
+                child: BarChartTimeSpanSelector(
+                    wallets: [wallet],
+                    backgroundColor: backgroundColor,
+                    defaultTimeSpan: _defaultTimeSpan,
+                    onChanged: updateSelectedTimeSpan),
+              ),
+              const Divider(),
+              SummaryView(wallet: wallet, timeSpan: _selectedTimeSpan)
+            ],
+          ))));
     });
   }
 }
